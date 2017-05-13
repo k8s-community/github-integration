@@ -10,7 +10,7 @@ type UserService struct {
 	client *Client
 }
 
-func (u *UserService) Create(user User) (error) {
+func (u *UserService) Create(user User) error {
 	fmt.Printf("Client: %+v", u.client)
 
 	req, err := u.client.NewRequest(postMethod, userUrlStr, u)
@@ -27,10 +27,10 @@ func (u *UserService) Create(user User) (error) {
 }
 
 type User struct {
-	Username *string  `json:"username"`
+	Username *string `json:"username"`
 }
 
-func NewUser (username string) *User {
+func NewUser(username string) *User {
 	return &User{
 		Username: &username,
 	}

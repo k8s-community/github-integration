@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"gopkg.in/rjz/githubhook.v0"
 	"github.com/google/go-github/github"
 	"github.com/vsaveliev/k8s-integration/user_manager_client"
+	"gopkg.in/rjz/githubhook.v0"
+	"net/http"
 	"strings"
 )
 

@@ -1,29 +1,29 @@
 package user_manager_client
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
-	"io"
-	"encoding/json"
-	"bytes"
 )
 
 const (
-	postMethod = "POST"
-	getMethod = "GET"
-	putMethod = "PUT"
+	postMethod   = "POST"
+	getMethod    = "GET"
+	putMethod    = "PUT"
 	deleteMethod = "DELETE"
 )
 
 type Client struct {
 	// HTTP client used to communicate with the API.
-	client  *http.Client
+	client *http.Client
 
 	// Base URL for API requests.
 	BaseURL *url.URL
 
 	// Services used for talking to different parts of the API.
-	User    *UserService
+	User       *UserService
 	Repository *RepositoryService
 }
 
@@ -34,7 +34,7 @@ func NewClient(httpClient *http.Client, baseUrl string) *Client {
 	baseURL, _ := url.Parse(baseUrl)
 
 	c := &Client{
-		client: httpClient,
+		client:  httpClient,
 		BaseURL: baseURL,
 	}
 

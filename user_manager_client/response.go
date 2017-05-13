@@ -1,9 +1,9 @@
 package user_manager_client
 
 import (
-	"net/http"
-	"io"
 	"encoding/json"
+	"io"
+	"net/http"
 )
 
 // Response is an API response.
