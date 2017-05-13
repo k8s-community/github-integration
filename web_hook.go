@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/google/go-github/github"
+	"github.com/vsaveliev/github-integration/jenkins_client"
 	"github.com/vsaveliev/k8s-integration/user_manager_client"
 	"gopkg.in/rjz/githubhook.v0"
 	"net/http"
@@ -21,6 +22,7 @@ func webHookHandler(w http.ResponseWriter, r *http.Request) {
 	case "integration_installation":
 		// Triggered when an integration has been installed or uninstalled.
 		fmt.Print("Initialization web hook")
+		// to do nothing
 	case "integration_installation_repositories":
 		// Triggered when a repository is added or removed from an installation.
 		fmt.Print("User repositories initialization web hook")
@@ -29,6 +31,7 @@ func webHookHandler(w http.ResponseWriter, r *http.Request) {
 		// Any Git push to a Repository, including editing tags or branches.
 		// Commits via API actions that update references are also counted. This is the default event.
 		fmt.Print("Push web hook")
+		err = runCiCdProcess(hook)
 	}
 
 	if err != nil {
@@ -78,4 +81,24 @@ func initialUserManagement(hook *githubhook.Hook) error {
 	}
 
 	return nil
+}
+
+func runCiCdProcess(hook *githubhook.Hook) error {
+	// need to choose event
+	evt := github.PushEvent{}
+
+	err := hook.Extract(&evt)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print("Login: ", *evt.Sender.Login)
+
+	// TODO: move to env
+	userManagerUrl := "http://test.vsaveliev.com"
+	token := "k8s-community"
+
+	client := jenkins_client.NewClient(nil, userManagerUrl)
+
+	return client.RunBuild(evt.Repo.FullName, token)
 }
