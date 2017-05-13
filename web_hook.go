@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/google/go-github/github"
 	"github.com/vsaveliev/github-integration/jenkins_client"
-	"github.com/vsaveliev/k8s-integration/user_manager_client"
+	"github.com/vsaveliev/github-integration/user_manager_client"
 	"gopkg.in/rjz/githubhook.v0"
 	"net/http"
 	"strings"
@@ -54,9 +54,12 @@ func initialUserManagement(hook *githubhook.Hook) error {
 	fmt.Printf("Removed repositories: %+v", evt.RepositoriesRemoved)
 
 	// TODO: move to env
-	userManagerUrl := "http://user.vsaveliev.com"
+	userManagerURL := "http://user.vsaveliev.com"
 
-	client := user_manager_client.NewClient(nil, userManagerUrl)
+	client, err := user_manager_client.NewClient(nil, userManagerURL)
+	if err != nil {
+		return err
+	}
 
 	user := user_manager_client.NewUser(*evt.Sender.Login)
 	err = client.User.Create(*user)
@@ -95,10 +98,16 @@ func runCiCdProcess(hook *githubhook.Hook) error {
 	fmt.Print("Login: ", *evt.Sender.Login)
 
 	// TODO: move to env
-	userManagerUrl := "http://test.vsaveliev.com"
+	jenkinsURL := "http://user.vsaveliev.com"
 	token := "k8s-community"
 
-	client := jenkins_client.NewClient(nil, userManagerUrl)
+	client, err := jenkins_client.NewClient(nil, jenkinsURL)
+	if err != nil {
+		return err
+	}
 
-	return client.RunBuild(evt.Repo.FullName, token)
+	// TODO: replace "/" --> "_"  , for example, "username_repName"
+	jobName := *evt.Repo.FullName
+
+	return client.RunBuild(jobName, token)
 }

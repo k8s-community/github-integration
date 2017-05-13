@@ -3,6 +3,7 @@ package user_manager_client
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -27,11 +28,15 @@ type Client struct {
 	Repository *RepositoryService
 }
 
-func NewClient(httpClient *http.Client, baseUrl string) *Client {
+func NewClient(httpClient *http.Client, baseUrl string) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
-	baseURL, _ := url.Parse(baseUrl)
+	baseURL, err := url.Parse(baseUrl)
+	if err != nil {
+		fmt.Printf("cannot parse url %s: %s", baseUrl, err)
+		return nil, err
+	}
 
 	c := &Client{
 		client:  httpClient,
@@ -41,7 +46,7 @@ func NewClient(httpClient *http.Client, baseUrl string) *Client {
 	c.User = &UserService{client: c}
 	c.Repository = &RepositoryService{client: c}
 
-	return c
+	return c, nil
 }
 
 func (c *Client) NewRequest(method string, urlStr string, body interface{}) (*http.Request, error) {

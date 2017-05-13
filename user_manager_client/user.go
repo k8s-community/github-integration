@@ -1,7 +1,5 @@
 package user_manager_client
 
-import "fmt"
-
 const (
 	userUrlStr = "/user"
 )
@@ -11,8 +9,6 @@ type UserService struct {
 }
 
 func (u *UserService) Create(user User) error {
-	fmt.Printf("Client: %+v", u.client)
-
 	req, err := u.client.NewRequest(postMethod, userUrlStr, u)
 	if err != nil {
 		return err
