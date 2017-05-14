@@ -1,23 +1,36 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+	"os"
 )
 
-func homeHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprint(w, "The full URL to your integration's website.")
-}
-
-func authCallbackHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprint(w, "The full URL to redirect to after a user authorizes an installation.")
-}
-
 func main() {
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/home", homeHandler)
-	http.HandleFunc("/webhook", webHookHandler)
-	http.HandleFunc("/auth_callback", authCallbackHandler)
+	keys := []string{
+		"GITHUBINT_SERVICE_PORT", "GITHUBINT_TOKEN",
+		"USERMAN_SERVICE_HOST", "USERMAN_SERVICE_PORT",
+		"JENKINS_SERVICE_HOST", "JENKINS_SERVICE_PORT", "JENKINS_TOKEN",
+	}
 
-	http.ListenAndServe(":7788", nil)
+	h := &handler{
+		infolog: log.New(os.Stdout, "[GITHUBINT:INFO]: ", log.LstdFlags),
+		errlog:  log.New(os.Stderr, "[GITHUBINT:ERROR]: ", log.LstdFlags),
+		env:     make(map[string]string, len(keys)),
+	}
+
+	for _, key := range keys {
+		value := os.Getenv(key)
+		if value == "" {
+			h.errlog.Fatalf("%s environment variable was not set", key)
+		}
+		h.env[key] = value
+	}
+
+	http.HandleFunc("/", h.homeHandler)
+	http.HandleFunc("/home", h.homeHandler)
+	http.HandleFunc("/webhook", h.webHookHandler)
+	http.HandleFunc("/auth_callback", h.authCallbackHandler)
+
+	http.ListenAndServe(":"+h.env["GITHUBINT_SERVICE_PORT"], nil)
 }

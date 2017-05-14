@@ -38,8 +38,7 @@ func NewClient(httpClient *http.Client, baseUrl string) (*Client, error) {
 	}
 	baseURL, err := url.Parse(baseUrl)
 	if err != nil {
-		fmt.Printf("cannot parse url %s: %s", baseUrl, err)
-		return nil, err
+		return nil, fmt.Errorf("user manager client: cannot parse url %s: %s", baseUrl, err)
 	}
 
 	c := &Client{
@@ -56,7 +55,7 @@ func NewClient(httpClient *http.Client, baseUrl string) (*Client, error) {
 func (c *Client) NewRequest(method string, urlStr string, body interface{}) (*http.Request, error) {
 	rel, err := url.Parse(apiPrefix + urlStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot parse url %s: %s", apiPrefix + urlStr, err)
 	}
 
 	u := c.BaseURL.ResolveReference(rel)
@@ -66,13 +65,13 @@ func (c *Client) NewRequest(method string, urlStr string, body interface{}) (*ht
 		buf = new(bytes.Buffer)
 		err := json.NewEncoder(buf).Encode(body)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("cannot encode data: %s", err)
 		}
 	}
 
 	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot send request: %s", err)
 	}
 
 	return req, nil

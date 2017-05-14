@@ -24,7 +24,7 @@ func NewClient(httpClient *http.Client, baseUrl string) (*Client, error) {
 	}
 	baseURL, err := url.Parse(baseUrl)
 	if err != nil {
-		fmt.Printf("cannot parse url %s: %s", baseUrl, err)
+		fmt.Printf("jenkins client: cannot parse url %s: %s", baseUrl, err)
 		return nil, err
 	}
 
@@ -42,11 +42,11 @@ func (c *Client) RunBuild(jobName string, token string) error {
 
 	resp, err := c.client.Get(URL)
 	if err != nil {
-		return err
+		return fmt.Errorf("jenkins client: cannot run jenkins job, error: %s", err)
 	}
 
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("request error, code = %s", resp.StatusCode)
+		return fmt.Errorf("jenkins client: cannot run jenkins job, http error code = %d", resp.StatusCode)
 	}
 
 	return nil
