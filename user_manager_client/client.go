@@ -16,6 +16,10 @@ const (
 	deleteMethod = "DELETE"
 )
 
+const (
+	apiPrefix = "/api/v1"
+)
+
 type Client struct {
 	// HTTP client used to communicate with the API.
 	client *http.Client
@@ -50,7 +54,7 @@ func NewClient(httpClient *http.Client, baseUrl string) (*Client, error) {
 }
 
 func (c *Client) NewRequest(method string, urlStr string, body interface{}) (*http.Request, error) {
-	rel, err := url.Parse(urlStr)
+	rel, err := url.Parse(apiPrefix + urlStr)
 	if err != nil {
 		return nil, err
 	}

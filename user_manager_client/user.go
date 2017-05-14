@@ -23,11 +23,11 @@ func (u *UserService) Create(user User) error {
 }
 
 type User struct {
-	Username *string `json:"username"`
+	Name *string `json:"name"`
 }
 
 func NewUser(username string) *User {
 	return &User{
-		Username: &username,
+		Name: &username,
 	}
 }
