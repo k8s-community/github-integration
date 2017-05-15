@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/google/go-github/github"
-	"github.com/vsaveliev/github-integration/jenkins_client"
-	"github.com/vsaveliev/github-integration/user_manager_client"
+	"github.com/vsaveliev/github-integration/jenkins"
+	userManClient "github.com/vsaveliev/user-manager/client"
 	"gopkg.in/rjz/githubhook.v0"
 )
 
@@ -54,21 +54,21 @@ func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
 
 	userManagerURL := h.env["USERMAN_SERVICE_HOST"]
 
-	client, err := user_manager_client.NewClient(nil, userManagerURL)
+	client, err := userManClient.NewClient(nil, userManagerURL)
 	if err != nil {
 		return err
 	}
 
 	h.infolog.Print("Try to create user: ", *evt.Sender.Login)
-	user := user_manager_client.NewUser(*evt.Sender.Login)
-	err = client.User.Create(*user)
+	user := userManClient.NewUser(*evt.Sender.Login)
+	err = client.User.Sync(*user)
 	if err != nil {
 		return err
 	}
 
 	for _, rep := range evt.RepositoriesAdded {
 		arr := strings.Split(*rep.FullName, "/")
-		repository := user_manager_client.NewRepository(arr[0], arr[1])
+		repository := userManClient.NewRepository(arr[0], arr[1])
 
 		h.infolog.Print("Try to create repository: ", *rep.FullName)
 
@@ -78,7 +78,7 @@ func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
 
 	for _, rep := range evt.RepositoriesRemoved {
 		arr := strings.Split(*rep.FullName, "/")
-		repository := user_manager_client.NewRepository(arr[0], arr[1])
+		repository := userManClient.NewRepository(arr[0], arr[1])
 
 		h.infolog.Print("Try to remove repository: ", *rep.FullName)
 
@@ -100,7 +100,7 @@ func (h *handler) runCiCdProcess(hook *githubhook.Hook) error {
 	jenkinsURL := h.env["JENKINS_SERVICE_HOST"]
 	token := h.env["JENKINS_TOKEN"]
 
-	client, err := jenkins_client.NewClient(nil, jenkinsURL)
+	client, err := jenkins.NewClient(nil, jenkinsURL)
 	if err != nil {
 		return err
 	}

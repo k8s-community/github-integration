@@ -1,4 +1,4 @@
-package jenkins_client
+package jenkins
 
 import (
 	"fmt"
