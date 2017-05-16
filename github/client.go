@@ -18,6 +18,7 @@ const (
 	apiBaseURL   = "https://api.github.com"
 )
 
+// Client definess
 type Client struct {
 	// HTTP client used to communicate with the API.
 	client *http.Client
@@ -39,6 +40,7 @@ type accessToken struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
+// NewClient initializes a Client instance
 func NewClient(httpClient *http.Client, integrationID int, installationID int, privKey []byte) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -59,6 +61,7 @@ func NewClient(httpClient *http.Client, integrationID int, installationID int, p
 	return c, nil
 }
 
+// NewRequest creates new http.Request instance
 func (c *Client) NewRequest(method string, urlStr string, body interface{}) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
@@ -125,6 +128,7 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 	return response, err
 }
 
+// generateBearer is used for JWT token generation
 func (c *Client) generateBearer() (string, error) {
 	parsedKey, err := jwt.ParseRSAPrivateKeyFromPEM(c.privKey)
 	if err != nil {
@@ -143,6 +147,7 @@ func (c *Client) generateBearer() (string, error) {
 	return bearerString, err
 }
 
+// generateAccessToken is used for access token generation
 func (c *Client) generateAccessToken() error {
 	bearer, err := c.generateBearer()
 	if err != nil {

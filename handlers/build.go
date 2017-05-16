@@ -5,25 +5,35 @@ import (
 
 	"strconv"
 
+	"encoding/json"
+	"io/ioutil"
+
 	"github.com/takama/router"
 	"github.com/vsaveliev/github-integration/github"
 )
 
+// BuildCallbackHandler is handler for callback from build service (system)
 func (h *Handler) BuildCallbackHandler(c *router.Control) {
-	build := github.BuildCallback{
-		Username:    c.Get(":username"),
-		Repository:  c.Get(":repository"),
-		CommitHash:  c.Get(":commitHash"),
-		State:       c.Get(":state"),
-		BuildURL:    c.Get(":buildURL"),
-		Description: c.Get(":description"),
-		Context:     c.Get(":context"),
+	var build github.BuildCallback
+
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		h.Errlog.Printf("couldn't read request body: %s", err)
+		c.Code(http.StatusBadRequest).Body(nil)
+		return
+	}
+
+	err = json.Unmarshal(body, &build)
+	if err != nil {
+		h.Errlog.Printf("couldn't validate request body: %s", err)
+		c.Code(http.StatusBadRequest).Body(nil)
+		return
 	}
 
 	installationID, ok := h.getInstallationID(build.Username)
 	if !ok {
-		h.Errlog.Printf("cannot find installation for %s in memory", build.Username)
-		c.Code(http.StatusNotFound)
+		h.Errlog.Printf("cannot find installation for user %s in memory", build.Username)
+		c.Code(http.StatusNotFound).Body(nil)
 		return
 	}
 
@@ -34,11 +44,11 @@ func (h *Handler) BuildCallbackHandler(c *router.Control) {
 
 	err = client.UpdateCommitStatus(build)
 	if err != nil {
-		h.Errlog.Printf("cannot update commit status, build: %+v")
+		h.Errlog.Printf("cannot update commit status, build: %+v", build)
 
-		c.Code(http.StatusInternalServerError)
+		c.Code(http.StatusInternalServerError).Body(nil)
 		return
 	}
 
-	c.Code(http.StatusOK)
+	c.Code(http.StatusOK).Body(nil)
 }

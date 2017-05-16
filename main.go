@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/takama/router"
@@ -13,11 +12,12 @@ const (
 	apiPrefix = "/api/v1"
 )
 
+// main function
 func main() {
 	keys := []string{
-		"GITHUBINT_SERVICE_PORT", "GITHUBINT_TOKEN", "GITHUBINT_PRIV_KEY", "GITHUBINT_INTEGRATION_ID",
+		"GITHUBINT_SERVICE_PORT",
+		"GITHUBINT_TOKEN", "GITHUBINT_PRIV_KEY", "GITHUBINT_INTEGRATION_ID",
 		"USERMAN_SERVICE_HOST", "USERMAN_SERVICE_PORT",
-		"JENKINS_SERVICE_HOST", "JENKINS_SERVICE_PORT", "JENKINS_TOKEN",
 	}
 
 	h := &handlers.Handler{
@@ -42,5 +42,7 @@ func main() {
 	r.POST(apiPrefix+"/auth_callback", h.AuthCallbackHandler)
 	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
 
-	http.ListenAndServe(":"+h.Env["GITHUBINT_SERVICE_PORT"], nil)
+	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_SERVICE_PORT"])
+
+	r.Listen(":" + h.Env["GITHUBINT_SERVICE_PORT"])
 }
