@@ -15,7 +15,7 @@ const (
 
 func main() {
 	keys := []string{
-		"GITHUBINT_SERVICE_PORT", "GITHUBINT_TOKEN", "GITHUBINT_PRIV_KEY",
+		"GITHUBINT_SERVICE_PORT", "GITHUBINT_TOKEN", "GITHUBINT_PRIV_KEY", "GITHUBINT_INTEGRATION_ID",
 		"USERMAN_SERVICE_HOST", "USERMAN_SERVICE_PORT",
 		"JENKINS_SERVICE_HOST", "JENKINS_SERVICE_PORT", "JENKINS_TOKEN",
 	}
@@ -40,7 +40,7 @@ func main() {
 	r.GET(apiPrefix+"/home", h.HomeHandler)
 	r.POST(apiPrefix+"/webhook", h.WebHookHandler)
 	r.POST(apiPrefix+"/auth_callback", h.AuthCallbackHandler)
-	r.POST(apiPrefix+"/build", h.BuildHandler)
+	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
 
 	http.ListenAndServe(":"+h.Env["GITHUBINT_SERVICE_PORT"], nil)
 }
