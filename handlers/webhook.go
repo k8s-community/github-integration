@@ -1,50 +1,50 @@
-package main
+package handlers
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/google/go-github/github"
+	"github.com/takama/router"
 	"github.com/vsaveliev/github-integration/jenkins"
 	userManClient "github.com/vsaveliev/user-manager/client"
 	"gopkg.in/rjz/githubhook.v0"
 )
 
-func (h *handler) webHookHandler(w http.ResponseWriter, r *http.Request) {
-	secret := []byte(h.env["GITHUBINT_TOKEN"])
-	hook, err := githubhook.Parse(secret, r)
+func (h *Handler) WebHookHandler(c *router.Control) {
+	secret := []byte(h.Env["GITHUBINT_TOKEN"])
+	hook, err := githubhook.Parse(secret, c.Request)
 	if err != nil {
-		h.errlog.Printf("Cannot parse hook (ID %s): %s", hook.Id, err)
+		h.Errlog.Printf("Cannot parse hook (ID %s): %s", hook.Id, err)
 		return
 	}
 
 	switch hook.Event {
 	case "integration_installation":
 		// Triggered when an integration has been installed or uninstalled.
-		h.infolog.Printf("Initialization web hook (ID %s)", hook.Id)
+		h.Infolog.Printf("Initialization web hook (ID %s)", hook.Id)
 		// to do nothing
 	case "integration_installation_repositories":
 		// Triggered when a repository is added or removed from an installation.
-		h.infolog.Printf("Initialization web hook for user repositories (ID %s)", hook.Id)
+		h.Infolog.Printf("Initialization web hook for user repositories (ID %s)", hook.Id)
 		err = h.initialUserManagement(hook)
 	case "push":
 		// Any Git push to a Repository, including editing tags or branches.
 		// Commits via API actions that update references are also counted. This is the default event.
-		h.infolog.Printf("Push hook (ID %s)", hook.Id)
+		h.Infolog.Printf("Push hook (ID %s)", hook.Id)
 		err = h.runCiCdProcess(hook)
 	default:
-		h.infolog.Printf("Not processed hook (ID %s), event = %s", hook.Id, hook.Event)
+		h.Infolog.Printf("Not processed hook (ID %s), event = %s", hook.Id, hook.Event)
 	}
 
-	h.infolog.Printf("Finish process hook (ID %s)", hook.Id)
+	h.Infolog.Printf("Finish process hook (ID %s)", hook.Id)
 
 	if err != nil {
-		h.errlog.Printf("Cannot process hook (ID %s): %s", hook.Id, err)
+		h.Errlog.Printf("Cannot process hook (ID %s): %s", hook.Id, err)
 		return
 	}
 }
 
-func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
+func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 	evt := github.IntegrationInstallationRepositoriesEvent{}
 
 	err := hook.Extract(&evt)
@@ -52,14 +52,14 @@ func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
 		return err
 	}
 
-	userManagerURL := h.env["USERMAN_SERVICE_HOST"]
+	userManagerURL := h.Env["USERMAN_SERVICE_HOST"]
 
 	client, err := userManClient.NewClient(nil, userManagerURL)
 	if err != nil {
 		return err
 	}
 
-	h.infolog.Print("Try to create user: ", *evt.Sender.Login)
+	h.Infolog.Print("Try to create user: ", *evt.Sender.Login)
 	user := userManClient.NewUser(*evt.Sender.Login)
 	err = client.User.Sync(*user)
 	if err != nil {
@@ -70,7 +70,7 @@ func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
 		arr := strings.Split(*rep.FullName, "/")
 		repository := userManClient.NewRepository(arr[0], arr[1])
 
-		h.infolog.Print("Try to create repository: ", *rep.FullName)
+		h.Infolog.Print("Try to create repository: ", *rep.FullName)
 
 		// TODO: handle error
 		client.Repository.Create(*repository)
@@ -80,7 +80,7 @@ func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
 		arr := strings.Split(*rep.FullName, "/")
 		repository := userManClient.NewRepository(arr[0], arr[1])
 
-		h.infolog.Print("Try to remove repository: ", *rep.FullName)
+		h.Infolog.Print("Try to remove repository: ", *rep.FullName)
 
 		// TODO: handle error
 		client.Repository.Delete(*repository)
@@ -89,7 +89,7 @@ func (h *handler) initialUserManagement(hook *githubhook.Hook) error {
 	return nil
 }
 
-func (h *handler) runCiCdProcess(hook *githubhook.Hook) error {
+func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
 	evt := github.PushEvent{}
 
 	err := hook.Extract(&evt)
@@ -97,8 +97,8 @@ func (h *handler) runCiCdProcess(hook *githubhook.Hook) error {
 		return err
 	}
 
-	jenkinsURL := h.env["JENKINS_SERVICE_HOST"]
-	token := h.env["JENKINS_TOKEN"]
+	jenkinsURL := h.Env["JENKINS_SERVICE_HOST"]
+	token := h.Env["JENKINS_TOKEN"]
 
 	client, err := jenkins.NewClient(nil, jenkinsURL)
 	if err != nil {
@@ -108,7 +108,7 @@ func (h *handler) runCiCdProcess(hook *githubhook.Hook) error {
 	// TODO: replace "/" --> "_"  , for example, "username_repName"
 	jobName := *evt.Repo.FullName
 
-	h.infolog.Print("Try to proxy push hook for job: ", jobName)
+	h.Infolog.Print("Try to proxy push hook for job: ", jobName)
 
 	return client.RunBuild(jobName, token)
 }
