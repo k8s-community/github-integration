@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"fmt"
+	"strings"
 
 	"github.com/google/go-github/github"
 	"github.com/k8s-community/cicd"
@@ -42,6 +43,11 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 		// Commits via API actions that update references are also counted. This is the default event.
 		h.Infolog.Printf("push hook (ID %s)", hook.Id)
 		err = h.runCiCdProcess(hook)
+		if err != nil {
+			h.Infolog.Printf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
+			c.Code(http.StatusBadRequest).Body(nil)
+			return
+		}
 
 	default:
 		h.Infolog.Printf("not processed hook (ID %s), event = %s", hook.Id, hook.Event)
@@ -109,6 +115,10 @@ func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
 	_, err = client.Build(req)
 	if err != nil {
 		return fmt.Errorf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
+	}
+
+	if !strings.HasPrefix(evt.Repo.Name, h.Env["GITHUBINT_BRANCH"]) {
+		return fmt.Errorf("incorrect branch %s for ci/cd process", evt.Repo.Name)
 	}
 
 	return nil
