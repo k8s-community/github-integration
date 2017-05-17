@@ -3,7 +3,10 @@ package handlers
 import (
 	"net/http"
 
+	"fmt"
+
 	"github.com/google/go-github/github"
+	"github.com/k8s-community/cicd"
 	userManClient "github.com/k8s-community/user-manager/client"
 	"github.com/takama/router"
 	githubhook "gopkg.in/rjz/githubhook.v0"
@@ -91,6 +94,20 @@ func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
 	err := hook.Extract(&evt)
 	if err != nil {
 		return err
+	}
+
+	ciCdURL := h.Env["CICD_SERVICE_HOST"]
+	client := cicd.NewClient(ciCdURL)
+
+	req := cicd.BuildRequest{
+		Username:   evt.Repo.Owner.Name,
+		Repository: evt.Repo.Name,
+		CommitHash: evt.HeadCommit.ID,
+	}
+
+	_, err = client.Build(req)
+	if err != nil {
+		return fmt.Errorf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
 	}
 
 	return nil
