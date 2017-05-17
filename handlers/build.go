@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
+	"github.com/k8s-community/github-integration/github"
 	"github.com/takama/router"
-	"github.com/vsaveliev/github-integration/github"
 )
 
 // BuildCallbackHandler is handler for callback from build service (system)

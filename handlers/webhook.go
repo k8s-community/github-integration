@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/google/go-github/github"
+	userManClient "github.com/k8s-community/user-manager/client"
 	"github.com/takama/router"
-	userManClient "github.com/vsaveliev/user-manager/client"
 	githubhook "gopkg.in/rjz/githubhook.v0"
 )
 
