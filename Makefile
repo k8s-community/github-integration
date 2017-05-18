@@ -45,7 +45,7 @@ push: container
 
 run: container
 	docker run --name ${CONTAINER_NAME} -p ${GITHUBINT_SERVICE_PORT}:${GITHUBINT_SERVICE_PORT} \
-		-e "MYAPP_SERVICE_PORT=${GITHUBINT_SERVICE_PORT}" \
+		-e "GITHUBINT_SERVICE_PORT=${GITHUBINT_SERVICE_PORT}" \
 		-d $(PREFIX):$(RELEASE)
 
 deploy: push
