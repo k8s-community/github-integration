@@ -1,0 +1,18 @@
+package: github.com/k8s-community/github-integration
+import:
+- package: github.com/dgrijalva/jwt-go
+  version: 6c8dedd55f8a2e41f605de6d5d66e51ed1f299fc
+- package: github.com/google/go-github
+  subpackages:
+  - github
+- package: github.com/k8s-community/cicd
+  version: ^0.0.1
+- package: github.com/k8s-community/user-manager
+  subpackages:
+  - client
+  vcs: git
+  version: develop
+- package: github.com/takama/router
+  version: ^0.6.3
+- package: gopkg.in/rjz/githubhook.v0
+  version: ^0.0.1
