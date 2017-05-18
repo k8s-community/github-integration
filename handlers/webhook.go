@@ -68,7 +68,7 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 		return err
 	}
 
-	userManagerURL := h.Env["USERMAN_SERVICE_HOST"]
+	userManagerURL := fmt.Sprintf("%s:%s", h.Env["USERMAN_SERVICE_HOST"], h.Env["USERMAN_SERVICE_PORT"])
 
 	client, err := userManClient.NewClient(nil, userManagerURL)
 	if err != nil {
@@ -96,13 +96,14 @@ func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
 		return err
 	}
 
-	ciCdURL := h.Env["CICD_SERVICE_HOST"]
+	ciCdURL := fmt.Sprintf("%s:%s", h.Env["CICD_SERVICE_HOST"], h.Env["CICD_SERVICE_PORT"])
+
 	client := cicd.NewClient(ciCdURL)
 
-	req := cicd.BuildRequest{
-		Username:   evt.Repo.Owner.Name,
-		Repository: evt.Repo.Name,
-		CommitHash: evt.HeadCommit.ID,
+	req := &cicd.BuildRequest{
+		Username:   *evt.Repo.Owner.Name,
+		Repository: *evt.Repo.Name,
+		CommitHash: *evt.HeadCommit.ID,
 	}
 
 	_, err = client.Build(req)
