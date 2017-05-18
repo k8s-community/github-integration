@@ -4,14 +4,14 @@ BUILDTAGS=
 
 # Use the 0.0.0 tag for testing, it shouldn't clobber any release builds
 APP?=github-integration
-CHARTS?=mycharts
+CHARTS?=charts
 USERSPACE?=k8s-community
 RELEASE?=0.1.0
 PROJECT?=github.com/${USERSPACE}/${APP}
-HELM_REPO?=https://${USERSPACE}.github.io/${CHARTS}
+HELM_REPO?=https://services.k8s.community/${CHARTS}
 GOOS?=linux
 REGISTRY?=registry.k8s.community
-MYAPP_SERVICE_PORT?=8080
+GITHUBINT_SERVICE_PORT?=8080
 
 NAMESPACE?=dev
 PREFIX?=${REGISTRY}/${NAMESPACE}/${APP}
@@ -44,8 +44,8 @@ push: container
 	docker push $(PREFIX):$(RELEASE)
 
 run: container
-	docker run --name ${CONTAINER_NAME} -p ${MYAPP_SERVICE_PORT}:${MYAPP_SERVICE_PORT} \
-		-e "MYAPP_SERVICE_PORT=${MYAPP_SERVICE_PORT}" \
+	docker run --name ${CONTAINER_NAME} -p ${GITHUBINT_SERVICE_PORT}:${GITHUBINT_SERVICE_PORT} \
+		-e "MYAPP_SERVICE_PORT=${GITHUBINT_SERVICE_PORT}" \
 		-d $(PREFIX):$(RELEASE)
 
 deploy: push
