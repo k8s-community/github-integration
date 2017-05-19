@@ -49,22 +49,23 @@ func (h *Handler) InfoHandler(c *router.Control) {
 func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallback) error {
 	installationID, ok := h.getInstallationID(build.Username)
 	if !ok {
-		h.Errlog.Printf("cannot find installation for user %s in memory", build.Username)
 		c.Code(http.StatusNotFound).Body(nil)
-		return fmt.Errorf("Couldn't find installation ID")
+		return fmt.Errorf("Couldn't find installation for %s", build.Username)
 	}
 
 	privKey := []byte(h.Env["GITHUBINT_PRIV_KEY"])
 	integrationID, err := strconv.Atoi(h.Env["GITHUBINT_INTEGRATION_ID"])
 
 	client, err := github.NewClient(nil, integrationID, installationID, privKey)
+	if err != nil {
+		c.Code(http.StatusInternalServerError).Body(nil)
+		return fmt.Errorf("Couldn't init client for github: %s", err)
+	}
 
 	err = client.UpdateCommitStatus(build)
 	if err != nil {
-		h.Errlog.Printf("cannot update commit status, build: %+v", build)
-
 		c.Code(http.StatusInternalServerError).Body(nil)
-		return fmt.Errorf("Couldn't update commit status")
+		return fmt.Errorf("Couldn't update commit status: %s", err)
 	}
 
 	return nil

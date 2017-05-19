@@ -29,6 +29,7 @@ func (h *Handler) BuildCallbackHandler(c *router.Control) {
 
 	err = h.updateCommitStatus(c, &build)
 	if err != nil {
+		h.Errlog.Printf("cannot update commit status, build: %+v, err: %s", build, err)
 		return
 	}
 
