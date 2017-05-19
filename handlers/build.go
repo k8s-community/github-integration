@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"net/http"
-
-	"strconv"
-
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
+	"strconv"
 
 	"github.com/k8s-community/github-integration/github"
 	"github.com/takama/router"

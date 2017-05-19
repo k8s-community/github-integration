@@ -1,14 +1,14 @@
 package client
 
 const (
-	buildCallbackURLStr = "/build-cd"
+	buildCallbackURLStr = "/build-cb"
 )
 
+// Possible GitHub Build states
 const (
-	// Build states
 	StatePending = "pending"
 	StateSuccess = "success"
-	StateError = "error"
+	StateError   = "error"
 	StateFailure = "failure"
 )
 

@@ -15,7 +15,7 @@ import (
 
 // installations is used for installations storing
 // TODO: move this data in persistent key-value storage
-var installations map[string]int = make(map[string]int)
+var installations = make(map[string]int)
 
 // WebHookHandler is common handler for web hooks (installation, repositories installation, push)
 func (h *Handler) WebHookHandler(c *router.Control) {
@@ -74,7 +74,7 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 		return err
 	}
 
-	userManagerURL := fmt.Sprintf("%s:%s", h.Env["USERMAN_SERVICE_HOST"], h.Env["USERMAN_SERVICE_PORT"])
+	userManagerURL := h.Env["USERMAN_BASE_URL"]
 
 	client, err := userManClient.NewClient(nil, userManagerURL)
 	if err != nil {
@@ -85,10 +85,12 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 
 	user := userManClient.NewUser(*evt.Sender.Login)
 
-	err = client.User.Sync(*user)
+	code, err := client.User.Sync(user)
 	if err != nil {
 		return err
 	}
+
+	h.Infolog.Printf("Service user-man, method sync, returned code: %d", code)
 
 	return nil
 }
@@ -102,7 +104,7 @@ func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
 		return err
 	}
 
-	ciCdURL := fmt.Sprintf("%s:%s", h.Env["CICD_SERVICE_HOST"], h.Env["CICD_SERVICE_PORT"])
+	ciCdURL := h.Env["CICD_BASE_URL"]
 
 	client := cicd.NewClient(ciCdURL)
 

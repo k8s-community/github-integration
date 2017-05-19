@@ -20,8 +20,7 @@ func main() {
 	keys := []string{
 		"GITHUBINT_SERVICE_PORT", "GITHUBINT_BRANCH",
 		"GITHUBINT_TOKEN", "GITHUBINT_PRIV_KEY", "GITHUBINT_INTEGRATION_ID",
-		"USERMAN_SERVICE_HOST", "USERMAN_SERVICE_PORT",
-		"CICD_SERVICE_HOST", "CICD_SERVICE_PORT",
+		"USERMAN_BASE_URL", "CICD_BASE_URL",
 	}
 
 	h := &handlers.Handler{
@@ -47,9 +46,10 @@ func main() {
 
 	r.GET(apiPrefix+"/home", h.HomeHandler)
 	r.POST(apiPrefix+"/webhook", h.WebHookHandler)
-	r.POST(apiPrefix+"/auth_callback", h.AuthCallbackHandler)
+	r.POST(apiPrefix+"/auth-callback", h.AuthCallbackHandler)
 	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
 	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_SERVICE_PORT"])
+	h.Infolog.Printf("Registered routes are: %+v", r.Routes())
 
 	go r.Listen(":" + h.Env["GITHUBINT_SERVICE_PORT"])
 
