@@ -104,6 +104,10 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		return err
 	}
 
+	if !strings.HasPrefix(*evt.Ref, "refs/heads/" + h.Env["GITHUBINT_BRANCH"]) {
+		return fmt.Errorf("incorrect branch %s for ci/cd process", *evt.Ref)
+	}
+
 	ciCdURL := h.Env["CICD_BASE_URL"]
 	buildURL := "https://k8s.community"
 
@@ -132,10 +136,6 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 	_, err = client.Build(req)
 	if err != nil {
 		return fmt.Errorf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
-	}
-
-	if !strings.HasPrefix(*evt.Ref, "refs/heads/" + h.Env["GITHUBINT_BRANCH"]) {
-		return fmt.Errorf("incorrect branch %s for ci/cd process", *evt.Ref)
 	}
 
 	return nil
