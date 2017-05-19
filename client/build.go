@@ -12,6 +12,10 @@ const (
 	StateFailure = "failure"
 )
 
+const (
+	ContextCICD = "k8s-community/cicd"
+)
+
 // BuildService defines
 type BuildService struct {
 	client *Client

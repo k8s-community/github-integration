@@ -11,6 +11,7 @@ import (
 	userManClient "github.com/k8s-community/user-manager/client"
 	"github.com/takama/router"
 	githubhook "gopkg.in/rjz/githubhook.v0"
+	"github.com/AlekSi/pointer"
 )
 
 // installations is used for installations storing
@@ -109,7 +110,6 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 	}
 
 	ciCdURL := h.Env["CICD_BASE_URL"]
-	buildURL := "https://k8s.community"
 
 	client := cicd.NewClient(ciCdURL)
 
@@ -119,7 +119,9 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		Repository: *evt.Repo.Name,
 		CommitHash: *evt.HeadCommit.ID,
 		State:      "pending",
-		BuildURL:   &buildURL, // TODO fix it
+		BuildURL:   pointer.ToString("https://k8s.community"), // TODO fix it
+		Context: pointer.ToString("k8s-community/cicd"), // move to constant!
+		Description: pointer.ToString("Waiting for release..."),
 	}
 	err = h.updateCommitStatus(c, build)
 	if err != nil {
