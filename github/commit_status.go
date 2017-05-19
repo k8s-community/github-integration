@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// BuildCallback todo: add description
 type BuildCallback struct {
 	Username    string `json:"username"`
 	Repository  string `json:"repository"`
@@ -17,6 +18,7 @@ type BuildCallback struct {
 	Context     string `json:"context"`
 }
 
+// CommitStatus todo: add description
 type CommitStatus struct {
 	State       string `json:"state"`
 	BuildURL    string `json:"target_url"`
@@ -24,7 +26,8 @@ type CommitStatus struct {
 	Context     string `json:"context"`
 }
 
-func (c *Client) UpdateCommitStatus(build BuildCallback) error {
+// UpdateCommitStatus todo: add description
+func (c *Client) UpdateCommitStatus(build *BuildCallback) error {
 	err := c.generateAccessToken()
 	if err != nil {
 		return fmt.Errorf("cannot generate access token: %s", err)

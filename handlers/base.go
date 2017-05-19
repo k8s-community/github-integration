@@ -6,8 +6,10 @@ import (
 
 	"net/http"
 
+	"github.com/k8s-community/github-integration/github"
 	"github.com/k8s-community/github-integration/version"
 	"github.com/takama/router"
+	"strconv"
 )
 
 // Handler defines
@@ -28,10 +30,12 @@ func (h *Handler) AuthCallbackHandler(c *router.Control) {
 	fmt.Fprint(c.Writer, "The full URL to redirect to after a user authorizes an installation.")
 }
 
+// HealthzHandler todo: add description
 func (h *Handler) HealthzHandler(c *router.Control) {
 	c.Code(http.StatusOK).Body("Ok")
 }
 
+// InfoHandler todo: add description
 func (h *Handler) InfoHandler(c *router.Control) {
 	c.Code(http.StatusOK).Body(
 		map[string]string{
@@ -40,4 +44,28 @@ func (h *Handler) InfoHandler(c *router.Control) {
 			"repo":    version.REPO,
 		},
 	)
+}
+
+func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallback) error {
+	installationID, ok := h.getInstallationID(build.Username)
+	if !ok {
+		h.Errlog.Printf("cannot find installation for user %s in memory", build.Username)
+		c.Code(http.StatusNotFound).Body(nil)
+		return fmt.Errorf("Couldn't find installation ID")
+	}
+
+	privKey := []byte(h.Env["GITHUBINT_PRIV_KEY"])
+	integrationID, err := strconv.Atoi(h.Env["GITHUBINT_INTEGRATION_ID"])
+
+	client, err := github.NewClient(nil, integrationID, installationID, privKey)
+
+	err = client.UpdateCommitStatus(build)
+	if err != nil {
+		h.Errlog.Printf("cannot update commit status, build: %+v", build)
+
+		c.Code(http.StatusInternalServerError).Body(nil)
+		return fmt.Errorf("Couldn't update commit status")
+	}
+
+	return nil
 }
