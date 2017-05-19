@@ -4,6 +4,14 @@ const (
 	buildCallbackURLStr = "/build-cd"
 )
 
+const (
+	// Build states
+	StatePending = "pending"
+	StateSuccess = "success"
+	StateError = "error"
+	StateFailure = "failure"
+)
+
 // BuildService defines
 type BuildService struct {
 	client *Client
