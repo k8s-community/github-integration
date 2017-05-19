@@ -116,7 +116,10 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		State:      "pending",
 		BuildURL:   "https://k8s.community", // TODO fix it
 	}
-	h.updateCommitStatus(c, build)
+	err = h.updateCommitStatus(c, build)
+	if err != nil {
+		h.Errlog.Printf("cannot update commit status, build: %+v, err: %s", build, err)
+	}
 
 	// run CICD process
 	req := &cicd.BuildRequest{
