@@ -11,7 +11,7 @@ import:
   subpackages:
   - client
   vcs: git
-  version: develop
+  version: ^0.1.3
 - package: github.com/takama/router
   version: ^0.6.3
 - package: gopkg.in/rjz/githubhook.v0
