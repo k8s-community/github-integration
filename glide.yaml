@@ -8,10 +8,10 @@ import:
 - package: github.com/k8s-community/cicd
   version: ^0.0.1
 - package: github.com/k8s-community/user-manager
+  version: ^0.1.3
+  vcs: git
   subpackages:
   - client
-  vcs: git
-  version: ^0.1.3
 - package: github.com/takama/router
   version: ^0.6.3
 - package: gopkg.in/rjz/githubhook.v0
