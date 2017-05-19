@@ -13,17 +13,17 @@ type BuildCallback struct {
 	Repository  string `json:"repository"`
 	CommitHash  string `json:"commitHash"`
 	State       string `json:"state"`
-	BuildURL    string `json:"buildURL"`
-	Description string `json:"description"`
-	Context     string `json:"context"`
+	BuildURL    *string `json:"buildURL,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Context     *string `json:"context,omitempty"`
 }
 
 // CommitStatus todo: add description
 type CommitStatus struct {
 	State       string `json:"state"`
-	BuildURL    string `json:"target_url"`
-	Description string `json:"description"`
-	Context     string `json:"context"`
+	BuildURL    *string `json:"target_url,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Context     *string `json:"context,omitempty"`
 }
 
 // UpdateCommitStatus todo: add description

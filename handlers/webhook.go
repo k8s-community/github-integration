@@ -105,6 +105,7 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 	}
 
 	ciCdURL := h.Env["CICD_BASE_URL"]
+	buildURL := "https://k8s.community"
 
 	client := cicd.NewClient(ciCdURL)
 
@@ -114,7 +115,7 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		Repository: *evt.Repo.Name,
 		CommitHash: *evt.HeadCommit.ID,
 		State:      "pending",
-		BuildURL:   "https://k8s.community", // TODO fix it
+		BuildURL:   &buildURL, // TODO fix it
 	}
 	err = h.updateCommitStatus(c, build)
 	if err != nil {
