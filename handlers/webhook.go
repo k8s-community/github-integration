@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"net/http"
-
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/google/go-github/github"
 	"github.com/k8s-community/cicd"
+	githubWrap "github.com/k8s-community/github-integration/github"
 	userManClient "github.com/k8s-community/user-manager/client"
 	"github.com/takama/router"
 	githubhook "gopkg.in/rjz/githubhook.v0"
@@ -42,7 +42,7 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 		// Any Git push to a Repository, including editing tags or branches.
 		// Commits via API actions that update references are also counted. This is the default event.
 		h.Infolog.Printf("push hook (ID %s)", hook.Id)
-		err = h.runCiCdProcess(hook)
+		err = h.runCiCdProcess(c, hook)
 		if err != nil {
 			h.Infolog.Printf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
 			c.Code(http.StatusBadRequest).Body(nil)
@@ -96,7 +96,7 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 }
 
 // runCiCdProcess is used for start CI/CD process for some repository from push hook
-func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
+func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error {
 	evt := github.PushEvent{}
 
 	err := hook.Extract(&evt)
@@ -108,6 +108,17 @@ func (h *Handler) runCiCdProcess(hook *githubhook.Hook) error {
 
 	client := cicd.NewClient(ciCdURL)
 
+	// set Pending sttatus to Github
+	build := &githubWrap.BuildCallback{
+		Username:   *evt.Repo.Owner.Name,
+		Repository: *evt.Repo.Name,
+		CommitHash: *evt.HeadCommit.ID,
+		State:      "pending",
+		BuildURL:   "https://k8s.community", // TODO fix it
+	}
+	h.updateCommitStatus(c, build)
+
+	// run CICD process
 	req := &cicd.BuildRequest{
 		Username:   *evt.Repo.Owner.Name,
 		Repository: *evt.Repo.Name,
