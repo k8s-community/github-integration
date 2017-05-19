@@ -135,7 +135,7 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 	}
 
 	if !strings.HasPrefix(*evt.Repo.Name, h.Env["GITHUBINT_BRANCH"]) {
-		return fmt.Errorf("incorrect branch %s for ci/cd process", evt.Repo.Name)
+		return fmt.Errorf("incorrect branch %s for ci/cd process", *evt.Repo.Name)
 	}
 
 	return nil
