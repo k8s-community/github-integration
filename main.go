@@ -80,6 +80,7 @@ func main() {
 	}
 
 	r := router.New()
+	r.PanicHandler = handlers.Panic
 
 	r.GET(apiPrefix+"/", h.HomeHandler)
 
