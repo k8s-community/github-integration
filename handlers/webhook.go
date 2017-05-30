@@ -82,7 +82,7 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 
 	h.Infolog.Print("Try to activate (sync) user in k8s system: ", *evt.Sender.Login)
 
-	user := userManClient.NewUser(*evt.Sender.Login)
+	user := userManClient.NewUser(*evt.Installation.Account.Login)
 
 	code, err := client.User.Sync(user)
 	if err != nil {
@@ -153,7 +153,7 @@ func (h *Handler) saveInstallation(hook *githubhook.Hook) error {
 	h.Infolog.Printf("save installation for user %s (installation ID = %d)", *evt.Sender.Login, *evt.Installation.ID)
 
 	// save installation for commit status update
-	err = h.setInstallationID(*evt.Sender.Login, *evt.Installation.ID)
+	err = h.setInstallationID(*evt.Installation.Account.Login, *evt.Installation.ID)
 	if err != nil {
 		h.Errlog.Printf("Couldn't save installation: %+v", err)
 	}
