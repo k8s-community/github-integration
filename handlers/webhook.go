@@ -175,7 +175,7 @@ func (h *Handler) installationID(username string) (*int, error) {
 }
 
 func (h *Handler) setInstallationID(username string, instID int) error {
-	var inst *models.Installation
+	var inst = &models.Installation{}
 
 	st, err := h.DB.FindOneFrom(models.InstallationTable, "username", username)
 	if err != nil && err != reform.ErrNoRows {
