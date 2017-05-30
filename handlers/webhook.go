@@ -103,6 +103,11 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		return err
 	}
 
+	// ToDO: process somehow kind of hooks without HeadCommit
+	if evt.HeadCommit == nil {
+		return nil
+	}
+
 	h.setInstallationID(*evt.Repo.Owner.Name, *evt.Installation.ID)
 
 	if !strings.HasPrefix(*evt.Ref, "refs/heads/" + h.Env["GITHUBINT_BRANCH"]) {
