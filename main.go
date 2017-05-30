@@ -1,14 +1,17 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"os"
-
 	"os/signal"
 	"syscall"
 
 	"github.com/k8s-community/github-integration/handlers"
 	"github.com/takama/router"
+	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/dialects/postgresql"
 )
 
 const (
@@ -17,6 +20,43 @@ const (
 
 // main function
 func main() {
+	var errors []error
+
+	// Database settings
+	dbHost, err := getFromEnv("COCKROACHDB_PUBLIC_SERVICE_HOST")
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	dbPort, err := getFromEnv("COCKROACHDB_PUBLIC_SERVICE_PORT")
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	dbUser, err := getFromEnv("COCKROACHDB_USER")
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	dbPass, err := getFromEnv("COCKROACHDB_PASSWORD")
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	dbName, err := getFromEnv("COCKROACHDB_NAME")
+	if err != nil {
+		errors = append(errors, err)
+	}
+
+	db, err := startupDB(dbHost, dbPort, dbUser, dbPass, dbName)
+	if err != nil {
+		log.Fatalf("Couldn't start up DB: %+v", err)
+	}
+
+	if len(errors) > 0 {
+		log.Fatalf("Couldn't start service because required DB parameters are not set: %+v", errors)
+	}
+
 	keys := []string{
 		"GITHUBINT_SERVICE_PORT", "GITHUBINT_BRANCH",
 		"GITHUBINT_TOKEN", "GITHUBINT_PRIV_KEY", "GITHUBINT_INTEGRATION_ID",
@@ -24,6 +64,7 @@ func main() {
 	}
 
 	h := &handlers.Handler{
+		DB:      db,
 		Infolog: log.New(os.Stdout, "[GITHUBINT:INFO]: ", log.LstdFlags),
 		Errlog:  log.New(os.Stderr, "[GITHUBINT:ERROR]: ", log.LstdFlags),
 		Env:     make(map[string]string, len(keys)),
@@ -68,4 +109,36 @@ func main() {
 	}
 
 	h.Infolog.Println("shutdown")
+}
+
+func getFromEnv(name string) (string, error) {
+	value := os.Getenv(name)
+	if len(value) == 0 {
+		return "", fmt.Errorf("Environement variable %s must be set", name)
+	}
+
+	return value, nil
+}
+
+// startupDB makes connection with DB, initializes reform DB level.
+func startupDB(host, port, user, password, name string) (*reform.DB, error) {
+	dataSource := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, name,
+	)
+
+	conn, err := sql.Open("postgres", dataSource)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = conn.Ping(); err != nil {
+		return nil, err
+	}
+
+	db := reform.NewDB(conn, postgresql.Dialect, reform.NewPrintfLogger(log.Printf))
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

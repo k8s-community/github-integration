@@ -3,17 +3,18 @@ package handlers
 import (
 	"fmt"
 	"log"
-
 	"net/http"
+	"strconv"
 
 	"github.com/k8s-community/github-integration/github"
 	"github.com/k8s-community/github-integration/version"
 	"github.com/takama/router"
-	"strconv"
+	"gopkg.in/reform.v1"
 )
 
 // Handler defines
 type Handler struct {
+	DB      *reform.DB
 	Infolog *log.Logger
 	Errlog  *log.Logger
 	Env     map[string]string
@@ -47,8 +48,8 @@ func (h *Handler) InfoHandler(c *router.Control) {
 }
 
 func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallback) error {
-	installationID, ok := h.getInstallationID(build.Username)
-	if !ok {
+	installationID, err := h.installationID(build.Username)
+	if err != nil {
 		c.Code(http.StatusNotFound).Body(nil)
 		return fmt.Errorf("Couldn't find installation for %s", build.Username)
 	}
@@ -56,7 +57,7 @@ func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallb
 	privKey := []byte(h.Env["GITHUBINT_PRIV_KEY"])
 	integrationID, err := strconv.Atoi(h.Env["GITHUBINT_INTEGRATION_ID"])
 
-	client, err := github.NewClient(nil, integrationID, installationID, privKey)
+	client, err := github.NewClient(nil, integrationID, *installationID, privKey)
 	if err != nil {
 		c.Code(http.StatusInternalServerError).Body(nil)
 		return fmt.Errorf("Couldn't init client for github: %s", err)
