@@ -105,13 +105,15 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 
 	// ToDO: process somehow kind of hooks without HeadCommit
 	if evt.HeadCommit == nil {
+		h.Infolog.Printf("Warning! Don't know how to process hook %s - no HeadCommit inside", hook.Id)
 		return nil
 	}
 
 	h.setInstallationID(*evt.Repo.Owner.Name, *evt.Installation.ID)
 
 	if !strings.HasPrefix(*evt.Ref, "refs/heads/" + h.Env["GITHUBINT_BRANCH"]) {
-		return fmt.Errorf("incorrect branch %s for ci/cd process", *evt.Ref)
+		h.Infolog.Printf("Warning! Don't know how to process hook %s - branch %s", hook.Id, *evt.Ref)
+		return nil
 	}
 
 	ciCdURL := h.Env["CICD_BASE_URL"]
