@@ -1,7 +1,7 @@
 FROM alpine:3.5
 
 ENV GITHUBINT_SERVICE_PORT 8080
-ENV GITHUBINT_BRANCH "workshop/"
+ENV GITHUBINT_BRANCH "release/"
 ENV GITHUBINT_TOKEN "Webhook secret is in integration settings on Github"
 ENV GITHUBINT_PRIV_KEY "Private key is in integration settings on Github"
 ENV GITHUBINT_INTEGRATION_ID "Integration ID is in it's settings on Github"
