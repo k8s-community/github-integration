@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/k8s-community/github-integration/handlers"
+	_ "github.com/lib/pq" // postgresql driver
 	"github.com/takama/router"
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
