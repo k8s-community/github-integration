@@ -152,7 +152,10 @@ func (h *Handler) saveInstallation(hook *githubhook.Hook) error {
 	h.Infolog.Printf("save installation for user %s (installation ID = %d)", *evt.Sender.Login, *evt.Installation.ID)
 
 	// save installation for commit status update
-	h.setInstallationID(*evt.Sender.Login, *evt.Installation.ID)
+	err = h.setInstallationID(*evt.Sender.Login, *evt.Installation.ID)
+	if err != nil {
+		h.Errlog.Printf("Couldn't save installation: %+v", err)
+	}
 
 	return nil
 }
