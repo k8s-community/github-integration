@@ -47,7 +47,7 @@ func (v *installationTableType) PKColumnIndex() uint {
 
 // InstallationTable represents installations view or table in SQL database.
 var InstallationTable = &installationTableType{
-	s: parse.StructInfo{Type: "Installation", SQLSchema: "", SQLName: "installations", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int64", Column: "id"}, {Name: "Usrename", PKType: "", Column: "username"}, {Name: "Source", PKType: "", Column: "source"}, {Name: "InstallationID", PKType: "", Column: "installation_id"}, {Name: "CreatedAt", PKType: "", Column: "created_at"}, {Name: "UpdatedAt", PKType: "", Column: "updated_at"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Installation", SQLSchema: "", SQLName: "installations", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int64", Column: "id"}, {Name: "Username", PKType: "", Column: "username"}, {Name: "Source", PKType: "", Column: "source"}, {Name: "InstallationID", PKType: "", Column: "installation_id"}, {Name: "CreatedAt", PKType: "", Column: "created_at"}, {Name: "UpdatedAt", PKType: "", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Installation).Values(),
 }
 
@@ -55,7 +55,7 @@ var InstallationTable = &installationTableType{
 func (s Installation) String() string {
 	res := make([]string, 6)
 	res[0] = "ID: " + reform.Inspect(s.ID, true)
-	res[1] = "Usrename: " + reform.Inspect(s.Username, true)
+	res[1] = "Username: " + reform.Inspect(s.Username, true)
 	res[2] = "Source: " + reform.Inspect(s.Source, true)
 	res[3] = "InstallationID: " + reform.Inspect(s.InstallationID, true)
 	res[4] = "CreatedAt: " + reform.Inspect(s.CreatedAt, true)
