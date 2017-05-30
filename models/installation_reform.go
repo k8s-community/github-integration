@@ -27,7 +27,7 @@ func (v *installationTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *installationTableType) Columns() []string {
-	return []string{"id", "username", "source", "installation_id", "created_at", "updated_at"}
+	return []string{"id", "username", "installation_id", "created_at", "updated_at"}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -47,19 +47,18 @@ func (v *installationTableType) PKColumnIndex() uint {
 
 // InstallationTable represents installations view or table in SQL database.
 var InstallationTable = &installationTableType{
-	s: parse.StructInfo{Type: "Installation", SQLSchema: "", SQLName: "installations", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int64", Column: "id"}, {Name: "Username", PKType: "", Column: "username"}, {Name: "Source", PKType: "", Column: "source"}, {Name: "InstallationID", PKType: "", Column: "installation_id"}, {Name: "CreatedAt", PKType: "", Column: "created_at"}, {Name: "UpdatedAt", PKType: "", Column: "updated_at"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Installation", SQLSchema: "", SQLName: "installations", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int64", Column: "id"}, {Name: "Username", PKType: "", Column: "username"}, {Name: "InstallationID", PKType: "", Column: "installation_id"}, {Name: "CreatedAt", PKType: "", Column: "created_at"}, {Name: "UpdatedAt", PKType: "", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Installation).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s Installation) String() string {
-	res := make([]string, 6)
+	res := make([]string, 5)
 	res[0] = "ID: " + reform.Inspect(s.ID, true)
 	res[1] = "Username: " + reform.Inspect(s.Username, true)
-	res[2] = "Source: " + reform.Inspect(s.Source, true)
-	res[3] = "InstallationID: " + reform.Inspect(s.InstallationID, true)
-	res[4] = "CreatedAt: " + reform.Inspect(s.CreatedAt, true)
-	res[5] = "UpdatedAt: " + reform.Inspect(s.UpdatedAt, true)
+	res[2] = "InstallationID: " + reform.Inspect(s.InstallationID, true)
+	res[3] = "CreatedAt: " + reform.Inspect(s.CreatedAt, true)
+	res[4] = "UpdatedAt: " + reform.Inspect(s.UpdatedAt, true)
 	return strings.Join(res, ", ")
 }
 
@@ -69,7 +68,6 @@ func (s *Installation) Values() []interface{} {
 	return []interface{}{
 		s.ID,
 		s.Username,
-		s.Source,
 		s.InstallationID,
 		s.CreatedAt,
 		s.UpdatedAt,
@@ -82,7 +80,6 @@ func (s *Installation) Pointers() []interface{} {
 	return []interface{}{
 		&s.ID,
 		&s.Username,
-		&s.Source,
 		&s.InstallationID,
 		&s.CreatedAt,
 		&s.UpdatedAt,
