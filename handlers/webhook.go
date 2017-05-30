@@ -49,8 +49,8 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 		}
 
 	default:
-		h.Infolog.Printf("not processed hook (ID %s), event = %s", hook.Id, hook.Event)
-		c.Code(http.StatusNotFound).Body(nil)
+		h.Infolog.Printf("Warning! Don't know how to process hook (ID %s), event = %s", hook.Id, hook.Event)
+		c.Code(http.StatusOK).Body(nil)
 		return
 	}
 
