@@ -15,7 +15,6 @@ const (
 type Installation struct {
 	ID             int64  `reform:"id,pk"`
 	Username       string `reform:"username"`
-	Source         string `reform:"source"`
 	InstallationID int    `reform:"installation_id"`
 
 	CreatedAt time.Time `reform:"created_at"`
