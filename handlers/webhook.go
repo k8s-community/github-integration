@@ -12,11 +12,8 @@ import (
 	"github.com/takama/router"
 	githubhook "gopkg.in/rjz/githubhook.v0"
 	"github.com/AlekSi/pointer"
+	"github.com/k8s-community/github-integration/models"
 )
-
-// installations is used for installations storing
-// TODO: move this data in persistent key-value storage
-var installations = make(map[string]int)
 
 // WebHookHandler is common handler for web hooks (installation, repositories installation, push)
 func (h *Handler) WebHookHandler(c *router.Control) {
@@ -154,15 +151,29 @@ func (h *Handler) saveInstallation(hook *githubhook.Hook) error {
 
 	h.Infolog.Printf("save installation for user %s (installation ID = %d)", *evt.Sender.Login, *evt.Installation.ID)
 
-	// save installation in memory for commit status update
-	installations[*evt.Sender.Login] = *evt.Installation.ID
+	// save installation for commit status update
+	h.setInstallationID(*evt.Sender.Login, *evt.Installation.ID)
 
 	return nil
 }
 
-// getInstallationID gets installation from memory
-func (h *Handler) getInstallationID(username string) (int, bool) {
-	id, ok := installations[username]
+// installationID gets installation from DB
+func (h *Handler) installationID(username string) (*int, error) {
+	st, err := h.DB.FindOneFrom(models.InstallationTable, "username", username)
+	if err != nil {
+		return nil, err
+	}
+	inst := st.(*models.Installation)
 
-	return id, ok
+	return pointer.ToInt(inst.InstallationID), nil
+}
+
+func (h *Handler) setInstallationID(username string, instID int) error {
+	inst := &models.Installation{
+		InstallationID: instID,
+		Username: username,
+	}
+	err := h.DB.Save(inst)
+
+	return err
 }
