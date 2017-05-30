@@ -8,5 +8,5 @@ import (
 )
 
 func Panic(c *router.Control) {
-	log.Println(debug.Stack())
+	log.Printf("Recovered panic:\n%s\n", string(debug.Stack()))
 }
