@@ -13,6 +13,7 @@ import (
 	githubhook "gopkg.in/rjz/githubhook.v0"
 	"github.com/AlekSi/pointer"
 	"github.com/k8s-community/github-integration/models"
+	"gopkg.in/reform.v1"
 )
 
 // WebHookHandler is common handler for web hooks (installation, repositories installation, push)
@@ -172,11 +173,21 @@ func (h *Handler) installationID(username string) (*int, error) {
 }
 
 func (h *Handler) setInstallationID(username string, instID int) error {
-	inst := &models.Installation{
-		InstallationID: instID,
-		Username: username,
+	var inst *models.Installation
+
+	st, err := h.DB.FindOneFrom(models.InstallationTable, "username", username)
+	if err != nil && err != reform.ErrNoRows {
+		return err
 	}
-	err := h.DB.Save(inst)
+
+	if err == nil {
+		inst = st.(*models.Installation)
+	}
+
+	inst.InstallationID = instID
+	inst.Username = username
+
+	err = h.DB.Save(inst)
 
 	return err
 }
