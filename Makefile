@@ -6,14 +6,14 @@ BUILDTAGS=
 APP?=github-integration
 CHARTS?=charts
 USERSPACE?=k8s-community
-RELEASE?=0.2.6
+RELEASE?=0.2.7
 PROJECT?=github.com/${USERSPACE}/${APP}
 HELM_REPO?=https://services.k8s.community/${CHARTS}
 GOOS?=linux
 REGISTRY?=registry.k8s.community
 GITHUBINT_SERVICE_PORT?=8080
 
-NAMESPACE?=dev
+NAMESPACE?=default
 PREFIX?=${REGISTRY}/${NAMESPACE}/${APP}
 CONTAINER_NAME?=${APP}-${NAMESPACE}
 

@@ -82,7 +82,7 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 
 	h.Infolog.Print("Try to activate (sync) user in k8s system: ", *evt.Sender.Login)
 
-	user := userManClient.NewUser(*evt.Sender.Login)
+	user := userManClient.NewUser(*evt.Installation.Account.Login)
 
 	code, err := client.User.Sync(user)
 	if err != nil {
@@ -102,6 +102,8 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 	if err != nil {
 		return err
 	}
+
+	h.setInstallationID(*evt.Repo.Owner.Name, *evt.Installation.ID)
 
 	if !strings.HasPrefix(*evt.Ref, "refs/heads/" + h.Env["GITHUBINT_BRANCH"]) {
 		return fmt.Errorf("incorrect branch %s for ci/cd process", *evt.Ref)
@@ -153,7 +155,7 @@ func (h *Handler) saveInstallation(hook *githubhook.Hook) error {
 	h.Infolog.Printf("save installation for user %s (installation ID = %d)", *evt.Sender.Login, *evt.Installation.ID)
 
 	// save installation for commit status update
-	err = h.setInstallationID(*evt.Sender.Login, *evt.Installation.ID)
+	err = h.setInstallationID(*evt.Installation.Account.Login, *evt.Installation.ID)
 	if err != nil {
 		h.Errlog.Printf("Couldn't save installation: %+v", err)
 	}
