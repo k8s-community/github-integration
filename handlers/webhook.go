@@ -7,7 +7,6 @@ import (
 
 	"github.com/google/go-github/github"
 	"github.com/k8s-community/cicd"
-	githubWrap "github.com/k8s-community/github-integration/github"
 	userManClient "github.com/k8s-community/user-manager/client"
 	"github.com/takama/router"
 	githubhook "gopkg.in/rjz/githubhook.v0"
@@ -111,35 +110,25 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 
 	h.setInstallationID(*evt.Repo.Owner.Name, *evt.Installation.ID)
 
-	if !strings.HasPrefix(*evt.Ref, "refs/heads/" + h.Env["GITHUBINT_BRANCH"]) {
+	prefix := "refs/heads/" + h.Env["GITHUBINT_BRANCH"]
+	if !strings.HasPrefix(*evt.Ref, prefix) {
 		h.Infolog.Printf("Warning! Don't know how to process hook %s - branch %s", hook.Id, *evt.Ref)
 		return nil
 	}
 
+	version := strings.Trim(*evt.Ref, prefix)
+
 	ciCdURL := h.Env["CICD_BASE_URL"]
 
 	client := cicd.NewClient(ciCdURL)
-
-	// set Pending sttatus to Github
-	build := &githubWrap.BuildCallback{
-		Username:   *evt.Repo.Owner.Name,
-		Repository: *evt.Repo.Name,
-		CommitHash: *evt.HeadCommit.ID,
-		State:      "pending",
-		BuildURL:   pointer.ToString("https://k8s.community"), // TODO fix it
-		Context: pointer.ToString("k8s-community/cicd"), // move to constant!
-		Description: pointer.ToString("Waiting for release..."),
-	}
-	err = h.updateCommitStatus(c, build)
-	if err != nil {
-		h.Errlog.Printf("cannot update commit status, build: %+v, err: %s", build, err)
-	}
 
 	// run CICD process
 	req := &cicd.BuildRequest{
 		Username:   *evt.Repo.Owner.Name,
 		Repository: *evt.Repo.Name,
 		CommitHash: *evt.HeadCommit.ID,
+		Task: cicd.TaskDeploy,
+		Version: pointer.ToString(version),
 	}
 
 	_, err = client.Build(req)
