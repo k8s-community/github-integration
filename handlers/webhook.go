@@ -40,7 +40,16 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 		// Any Git push to a Repository, including editing tags or branches.
 		// Commits via API actions that update references are also counted. This is the default event.
 		h.Infolog.Printf("push hook (ID %s)", hook.Id)
-		err = h.runCiCdProcess(c, hook)
+		err = h.processPush(c, hook)
+		if err != nil {
+			h.Infolog.Printf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
+			c.Code(http.StatusBadRequest).Body(nil)
+			return
+		}
+
+	case "create":
+		h.Infolog.Printf("create hook (ID %s)", hook.Id)
+		err = h.processPush(c, hook)
 		if err != nil {
 			h.Infolog.Printf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
 			c.Code(http.StatusBadRequest).Body(nil)
@@ -93,8 +102,8 @@ func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
 	return nil
 }
 
-// runCiCdProcess is used for start CI/CD process for some repository from push hook
-func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error {
+// processPush is used for start CI/CD process for some repository from push hook
+func (h *Handler) processPush(c *router.Control, hook *githubhook.Hook) error {
 	evt := github.PushEvent{}
 
 	err := hook.Extract(&evt)
@@ -116,7 +125,46 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		return nil
 	}
 
+	ciCdURL := h.Env["CICD_BASE_URL"]
+
+	client := cicd.NewClient(ciCdURL)
+
 	version := strings.Trim(*evt.Ref, prefix)
+	commitID := *evt.HeadCommit.ID
+	version += "_" + commitID[0:5]
+
+	// run CICD process
+	req := &cicd.BuildRequest{
+		Username:   *evt.Repo.Owner.Name,
+		Repository: *evt.Repo.Name,
+		CommitHash: *evt.HeadCommit.ID,
+		Task: cicd.TaskDeploy,
+		Version: &version,
+	}
+
+	_, err = client.Build(req)
+	if err != nil {
+		return fmt.Errorf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
+	}
+
+	return nil
+}
+
+func (h *Handler) processCreate(c *router.Control, hook *githubhook.Hook) error {
+	evt := github.CreateEvent{}
+
+	err := hook.Extract(&evt)
+	if err != nil {
+		return err
+	}
+
+	// Process only tags
+	if evt.RefType == nil || *evt.RefType != "tag" {
+		h.Infolog.Printf("Warning! Don't know how to process hook %s - not a tag", hook.Id)
+		return nil
+	}
+
+	h.setInstallationID(*evt.Repo.Owner.Name, *evt.Installation.ID)
 
 	ciCdURL := h.Env["CICD_BASE_URL"]
 
@@ -126,9 +174,9 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 	req := &cicd.BuildRequest{
 		Username:   *evt.Repo.Owner.Name,
 		Repository: *evt.Repo.Name,
-		CommitHash: *evt.HeadCommit.ID,
+		CommitHash: *evt.Ref,
 		Task: cicd.TaskDeploy,
-		Version: pointer.ToString(version),
+		Version: evt.Ref,
 	}
 
 	_, err = client.Build(req)
