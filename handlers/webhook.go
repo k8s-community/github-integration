@@ -49,7 +49,7 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 
 	case "create":
 		h.Infolog.Printf("create hook (ID %s)", hook.Id)
-		err = h.processPush(c, hook)
+		err = h.processCreate(c, hook)
 		if err != nil {
 			h.Infolog.Printf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
 			c.Code(http.StatusBadRequest).Body(nil)
