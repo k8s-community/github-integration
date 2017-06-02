@@ -116,11 +116,13 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		return nil
 	}
 
-	version := strings.Trim(*evt.Ref, prefix)
-
 	ciCdURL := h.Env["CICD_BASE_URL"]
 
 	client := cicd.NewClient(ciCdURL)
+
+	version := strings.Trim(*evt.Ref, prefix)
+	commitID := *evt.HeadCommit.ID
+	version += "_" + commitID[0:5]
 
 	// run CICD process
 	req := &cicd.BuildRequest{
@@ -128,7 +130,7 @@ func (h *Handler) runCiCdProcess(c *router.Control, hook *githubhook.Hook) error
 		Repository: *evt.Repo.Name,
 		CommitHash: *evt.HeadCommit.ID,
 		Task: cicd.TaskDeploy,
-		Version: pointer.ToString(version),
+		Version: &version,
 	}
 
 	_, err = client.Build(req)
