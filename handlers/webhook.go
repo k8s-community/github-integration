@@ -49,12 +49,14 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 
 	case "create":
 		h.Infolog.Printf("create hook (ID %s)", hook.Id)
-		err = h.processCreate(c, hook)
+		// ToDo: keep it for the future
+		/*err = h.processCreate(c, hook)
 		if err != nil {
 			h.Infolog.Printf("cannot run ci/cd process for hook (ID %s): %s", hook.Id, err)
 			c.Code(http.StatusBadRequest).Body(nil)
 			return
-		}
+		}*/
+		return
 
 	default:
 		h.Infolog.Printf("Warning! Don't know how to process hook (ID %s), event = %s", hook.Id, hook.Event)
@@ -131,7 +133,7 @@ func (h *Handler) processPush(c *router.Control, hook *githubhook.Hook) error {
 
 	version := strings.Trim(*evt.Ref, prefix)
 	commitID := *evt.HeadCommit.ID
-	version += "_" + commitID[0:5]
+	version += "-" + commitID[0:7]
 
 	// run CICD process
 	req := &cicd.BuildRequest{
