@@ -1,0 +1,10 @@
+name: github-integration
+description: A Helm chart for github-integration service
+version: 0.3.4
+home: https://k8s.community/
+sources:
+  - https://github.com/k8s-community/github-integration
+maintainers:
+  - name: Vladislav Saveliev
+    email: savelievharlam@gmail.com
+engine: gotpl
