@@ -1,3 +1,5 @@
+{{- $namespace := .Release.Namespace -}}
+{{- $serviceName := .Values.service.name -}}
 1. Get the application URL by running these commands:
 {{- if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "fullname" . }})
@@ -9,9 +11,16 @@
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
   echo http://$SERVICE_IP:{{ .Values.service.externalPort }}
 {{- else if contains "ClusterIP"  .Values.service.type }}
-  {{- if eq .Release.Namespace "default" }}
-  curl https://{{ .Values.image.registry }}/{{ .Values.service.name }}
+  {{- if eq .Release.Namespace .Values.workflow }}
+    {{- range .Values.ingress.hostBased.hosts }}
+  curl https://{{ . }}
+    {{- end }}
+    {{- range .Values.ingress.pathBased.hosts }}
+  curl https://{{ . }}/{{ $serviceName}}
+    {{- end }}
   {{- else }}
-  curl https://{{ .Values.image.registry }}/{{ .Release.Namespace }}/{{ .Values.service.name }}
+    {{- range .Values.ingress.pathBased.hosts }}
+  curl https://{{ . }}/{{ $namespace }}/{{ $serviceName}}
+    {{- end }}
   {{- end }}
 {{- end }}

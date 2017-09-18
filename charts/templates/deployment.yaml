@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "app.fullname" . }}
+  name: {{ template "name" . }}
   labels:
     app: {{ template "fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -22,15 +22,13 @@ spec:
       labels:
         app: {{ template "fullname" . }}
     spec:
+      {{- if .Values.image.pullSecretName }}
       imagePullSecrets:
       - name: {{ .Values.image.pullSecretName }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        {{- if eq .Release.Namespace "default" }}
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{- else }}
-        image: "{{ .Values.image.registry }}/{{ .Release.Namespace }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-        {{- end }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: GITHUBINT_INTEGRATION_ID
@@ -66,3 +64,4 @@ spec:
             port: {{ .Values.service.internalPort }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
+      terminationGracePeriodSeconds: {{ .Values.gracePeriod }}

@@ -1,46 +1,57 @@
 {{- if .Values.ingress.enabled -}}
 {{- $usePath := .Values.ingress.usePath -}}
 {{- $namespace := .Release.Namespace -}}
+{{- $workflow := .Values.workflow -}}
 {{- $serviceName := .Values.service.name -}}
 {{- $servicePort := .Values.service.externalPort -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-  {{- if .Values.ingress.usePath }}
-    ingress.kubernetes.io/rewrite-target: /
-  {{ end }}
+    ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.prefix }}
   {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
-  {{- end -}}
+  {{- end }}
   labels:
     app: {{ template "fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     component: "{{ .Values.service.name }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
-  name: {{ template "app.fullname" . }}
+  name: {{ template "name" . }}
 spec:
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- if eq $namespace $workflow }}
+  {{- range .Values.ingress.hostBased.hosts }}
   - host: {{ . }}
     http:
       paths:
-    {{- if $usePath }}
-      {{- if eq $namespace "default" }}
+      - path: /
+        backend:
+          serviceName: {{ $serviceName }}
+          servicePort: {{ $servicePort }}
+  {{- end -}}
+  {{- end }}
+  {{- range .Values.ingress.pathBased.hosts }}
+  - host: {{ . }}
+    http:
+      paths:
+      {{- if eq $namespace $workflow }}
       - path: /{{ $serviceName }}
       {{- else }}
       - path: /{{ $namespace }}/{{ $serviceName }}
       {{- end }}
         backend:
-    {{- else }}
-      - backend:
-    {{- end }}
-          serviceName: {{ printf "%s-%s" $serviceName "v0" | trunc 63 }}
+          serviceName: {{ $serviceName }}
           servicePort: {{ $servicePort }}
-  {{- end -}}
-  {{- if .Values.ingress.tls }}
+  {{- end }}
   tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
+  {{- if eq $namespace $workflow }}
+  {{- if .Values.ingress.hostBased.tls }}
+{{ toYaml .Values.ingress.hostBased.tls | indent 2 }}
+  {{- end -}}
+  {{- end }}
+  {{- if .Values.ingress.pathBased.tls }}
+{{ toYaml .Values.ingress.pathBased.tls | indent 2 }}
   {{- end -}}
 {{- end -}}
