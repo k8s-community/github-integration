@@ -1,0 +1,56 @@
+hash: 5d24cc36dc860519478c7ee7babc66d32d06e782e7ade7e5424a2d1451ff2c66
+updated: 2017-06-02T19:10:49.059521485+07:00
+imports:
+- name: github.com/AlekSi/pointer
+  version: 08a25bac605b3fcb6cc27f3917b2c2c87451963d
+- name: github.com/dgrijalva/jwt-go
+  version: 6c8dedd55f8a2e41f605de6d5d66e51ed1f299fc
+- name: github.com/golang/protobuf
+  version: fec3b39b059c0f88fa6b20f5ed012b1aa203a8b4
+  subpackages:
+  - proto
+- name: github.com/google/go-github
+  version: 4b7b445665c8ce4f3c10c753b1884e2c4f09e323
+  subpackages:
+  - github
+- name: github.com/google/go-querystring
+  version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
+  subpackages:
+  - query
+- name: github.com/k8s-community/cicd
+  version: be3d037dcc439b4f5fab74a83d9ac53a6d42f61d
+  subpackages:
+  - utils/rest
+- name: github.com/k8s-community/user-manager
+  version: 6cf98c17777351032527d6d1242c32de826c2d14
+  vcs: git
+  subpackages:
+  - client
+- name: github.com/lib/pq
+  version: 91f10e40ba0dd2d0bf9f93ec1d4077711a78df88
+  subpackages:
+  - oid
+- name: github.com/takama/router
+  version: bb2e2b42ce5f3985536263c61ae196a556108254
+- name: golang.org/x/net
+  version: e90d6d0afc4c315a0d87a568ae68577cc15149a0
+  subpackages:
+  - context
+- name: google.golang.org/appengine
+  version: 170382fa85b10b94728989dfcf6cc818b335c952
+  subpackages:
+  - internal
+  - internal/app_identity
+  - internal/base
+  - internal/datastore
+  - internal/log
+  - internal/modules
+  - internal/remote_api
+- name: gopkg.in/reform.v1
+  version: aa2ae077c28edaf600cb1b9067e15aca0b0179bd
+  subpackages:
+  - dialects/postgresql
+  - parse
+- name: gopkg.in/rjz/githubhook.v0
+  version: d5f019004f0a15c1c9be5ac3034071ba0dff5832
+testImports: []
