@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "app.fullname" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Values.service.name }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ .Values.maxUnavailable }}
+      maxSurge: {{ .Values.maxSurge }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecretName }}
+      containers:
+      - name: {{ .Chart.Name }}
+        {{- if eq .Release.Namespace "default" }}
+        image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{- else }}
+        image: "{{ .Values.image.registry }}/{{ .Release.Namespace }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        {{- end }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: GITHUBINT_INTEGRATION_ID
+          valueFrom:
+            secretKeyRef:
+              name: github-integration
+              key: integration-id
+        - name: GITHUBINT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-integration
+              key: integration-token
+        - name: GITHUBINT_PRIV_KEY
+          valueFrom:
+            secretKeyRef:
+              name: github-integration
+              key: integration-private-key
+        {{- range .Values.externalServices }}
+        - name: {{ printf "%s_SERVICE_HOST" .name | upper }}
+          value: {{ .host }}
+        - name: {{ printf "%s_SERVICE_PORT" .name | upper }}
+          value: "{{ .port }}"
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: {{ .Values.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: /info
+            port: {{ .Values.service.internalPort }}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}

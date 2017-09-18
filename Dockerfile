@@ -1,6 +1,6 @@
 FROM alpine:3.5
 
-ENV GITHUBINT_SERVICE_PORT 8080
+ENV GITHUBINT_LOCAL_PORT 8080
 ENV GITHUBINT_BRANCH "release/"
 
 ENV GITHUBINT_TOKEN "Webhook secret is in integration settings on Github"
@@ -23,4 +23,4 @@ COPY github-integration /
 
 CMD ["/github-integration"]
 
-EXPOSE $GITHUBINT_SERVICE_PORT
+EXPOSE $GITHUBINT_LOCAL_PORT
