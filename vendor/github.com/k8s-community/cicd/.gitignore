@@ -1,0 +1,6 @@
+.coverprofile
+.idea
+vendor
+cicd
+glide.lock
+

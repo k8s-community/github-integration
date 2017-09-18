@@ -1,0 +1,18 @@
+package: github.com/k8s-community/cicd
+import:
+- package: github.com/Sirupsen/logrus
+  version: ^0.11.5
+- package: github.com/k8s-community/handlers
+  version: ^0.0.1
+- package: github.com/satori/go.uuid
+  version: ^1.1.0
+- package: github.com/octago/sflags
+  version: ^0.2.0
+- package: github.com/takama/daemon
+  version: ^0.8.6
+- package: github.com/takama/router
+  version: ^0.6.3
+- package: github.com/k8s-community/github-integration
+  version: ~0.1.6
+  subpackages:
+  - client
