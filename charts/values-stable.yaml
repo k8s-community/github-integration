@@ -34,7 +34,7 @@ workflow: prod
 image:
   ## Docker Registry/Hub image name and tag
   ##
-  registry: registry.k8s.community
+  registry: registry.k8s.community/k8s-community
   name: github-integration
   tag: 0.3.4
 
