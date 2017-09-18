@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM scratch
 
 ENV GITHUBINT_LOCAL_PORT 8080
 ENV GITHUBINT_BRANCH "release/"
@@ -17,8 +17,7 @@ ENV COCKROACHDB_NAME github_integration
 ENV CICD_BASE_URL http://k8s-build-01:8080
 ENV USERMAN_BASE_URL https://services.k8s.community/user-manager
 
-RUN apk --no-cache add ca-certificates && update-ca-certificates
-
+COPY certs /etc/ssl/
 COPY github-integration /
 
 CMD ["/github-integration"]
