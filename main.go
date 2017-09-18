@@ -91,10 +91,10 @@ func main() {
 	r.POST(apiPrefix+"/webhook", h.WebHookHandler)
 	r.POST(apiPrefix+"/auth-callback", h.AuthCallbackHandler)
 	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
-	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_SERVICE_PORT"])
+	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_LOCAL_PORT"])
 	h.Infolog.Printf("Registered routes are: %+v", r.Routes())
 
-	go r.Listen(":" + h.Env["GITHUBINT_SERVICE_PORT"])
+	go r.Listen(":" + h.Env["GITHUBINT_LOCAL_PORT"])
 
 	// Set up channel on which to send signal notifications.
 	// We must use a buffered channel or risk missing the signal
