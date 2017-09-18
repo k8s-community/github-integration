@@ -3,7 +3,7 @@ all: push
 BUILDTAGS=
 
 APP?=github-integration
-PROJECT?=github.com/${USERSPACE}/${APP}
+PROJECT?=github.com/k8s-community/${APP}
 REGISTRY?=registry.k8s.community
 CA_DIR?=certs
 
