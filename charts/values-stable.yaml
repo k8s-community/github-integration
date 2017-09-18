@@ -36,7 +36,7 @@ image:
   ##
   registry: registry.k8s.community/k8s-community
   name: github-integration
-  tag: 0.3.4
+  tag: 0.3.5
 
   ## Docker Registry/Hub auth secret name, always use `registry-pull-secret` if registry inside if k8s
   ##
