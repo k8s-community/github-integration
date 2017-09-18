@@ -16,6 +16,7 @@ GITHUBINT_LOCAL_PORT?=8080
 
 NAMESPACE?=k8s-community
 INFRASTRUCTURE?=stable
+KUBE_CONTEXT?=inventory
 VALUES?=values-${INFRASTRUCTURE}
 
 CONTAINER_IMAGE?=${REGISTRY}/${NAMESPACE}/${APP}
@@ -74,7 +75,7 @@ run: container
 .PHONY: deploy
 deploy: push
 	helm upgrade ${CONTAINER_NAME} -f charts/${VALUES}.yaml charts \
-		--kube-context ${INFRASTRUCTURE} --namespace ${NAMESPACE} \
+		--kube-context ${KUBE_CONTEXT} --namespace ${NAMESPACE} \
 		--version=${RELEASE} -i --wait
 
 .PHONY: fmt
