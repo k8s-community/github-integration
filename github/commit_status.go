@@ -9,10 +9,10 @@ import (
 
 // BuildCallback todo: add description
 type BuildCallback struct {
-	Username    string `json:"username"`
-	Repository  string `json:"repository"`
-	CommitHash  string `json:"commitHash"`
-	State       string `json:"state"`
+	Username    string  `json:"username"`
+	Repository  string  `json:"repository"`
+	CommitHash  string  `json:"commitHash"`
+	State       string  `json:"state"`
 	BuildURL    *string `json:"buildURL,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Context     *string `json:"context,omitempty"`
@@ -20,7 +20,7 @@ type BuildCallback struct {
 
 // CommitStatus todo: add description
 type CommitStatus struct {
-	State       string `json:"state"`
+	State       string  `json:"state"`
 	BuildURL    *string `json:"target_url,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Context     *string `json:"context,omitempty"`
