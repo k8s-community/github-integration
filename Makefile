@@ -77,6 +77,8 @@ deploy: push
 		--kube-context ${INFRASTRUCTURE} --namespace ${NAMESPACE} \
 		--version=${RELEASE} -i --wait
 
+GO_LIST_FILES=$(shell go list ${PROJECT}/... | grep -v vendor)
+
 .PHONY: fmt
 fmt:
 	@echo "+ $@"
