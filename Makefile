@@ -77,12 +77,10 @@ deploy: push
 		--kube-context ${INFRASTRUCTURE} --namespace ${NAMESPACE} \
 		--version=${RELEASE} -i --wait
 
-GO_LIST_FILES=$(shell go list ${PROJECT}/... | grep -v vendor)
-
 .PHONY: fmt
 fmt:
 	@echo "+ $@"
-	@go list -f '{{if len .TestGoFiles}}"gofmt -s -l {{.Dir}}"{{end}}' ${GO_LIST_FILES} | xargs -L 1 sh -c
+	@go fmt ./...
 
 .PHONY: lint
 lint: bootstrap

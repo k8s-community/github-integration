@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/AlekSi/pointer"
 	"github.com/google/go-github/github"
 	"github.com/k8s-community/cicd"
+	"github.com/k8s-community/github-integration/models"
 	userManClient "github.com/k8s-community/user-manager/client"
 	"github.com/takama/router"
-	githubhook "gopkg.in/rjz/githubhook.v0"
-	"github.com/AlekSi/pointer"
-	"github.com/k8s-community/github-integration/models"
 	"gopkg.in/reform.v1"
+	githubhook "gopkg.in/rjz/githubhook.v0"
 )
 
 // WebHookHandler is common handler for web hooks (installation, repositories installation, push)
@@ -140,8 +140,8 @@ func (h *Handler) processPush(c *router.Control, hook *githubhook.Hook) error {
 		Username:   *evt.Repo.Owner.Name,
 		Repository: *evt.Repo.Name,
 		CommitHash: *evt.HeadCommit.ID,
-		Task: cicd.TaskDeploy,
-		Version: &version,
+		Task:       cicd.TaskDeploy,
+		Version:    &version,
 	}
 
 	_, err = client.Build(req)
@@ -177,8 +177,8 @@ func (h *Handler) processCreate(c *router.Control, hook *githubhook.Hook) error 
 		Username:   *evt.Repo.Owner.Name,
 		Repository: *evt.Repo.Name,
 		CommitHash: *evt.Ref,
-		Task: cicd.TaskDeploy,
-		Version: evt.Ref,
+		Task:       cicd.TaskDeploy,
+		Version:    evt.Ref,
 	}
 
 	_, err = client.Build(req)
