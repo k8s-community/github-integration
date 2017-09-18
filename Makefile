@@ -33,9 +33,8 @@ BUILDTAGS=
 all: build
 
 .PHONY: vendor
-vendor: clean
-	go get -u github.com/Masterminds/glide \
-	&& glide install
+vendor: clean bootstrap
+	dep ensure
 
 .PHONY: build
 build: vendor
@@ -84,7 +83,7 @@ fmt:
 	@go list -f '{{if len .TestGoFiles}}"gofmt -s -l {{.Dir}}"{{end}}' $(shell go list ${PROJECT}/... | grep -v vendor) | xargs -L 1 sh -c
 
 .PHONY: lint
-lint:
+lint: bootstrap
 	@echo "+ $@"
 	@go list -f '{{if len .TestGoFiles}}"golint {{.Dir}}/..."{{end}}' $(shell go list ${PROJECT}/... | grep -v vendor) | xargs -L 1 sh -c
 
@@ -106,3 +105,15 @@ cover:
 .PHONY: clean
 clean:
 	rm -f ${APP}
+
+HAS_DEP := $(shell command -v dep;)
+HAS_LINT := $(shell command -v golint;)
+
+.PHONY: bootstrap
+bootstrap:
+ifndef HAS_DEP
+	go get -u github.com/golang/dep/cmd/dep
+endif
+ifndef HAS_LINT
+	go get -u github.com/golang/lint/golint
+endif
