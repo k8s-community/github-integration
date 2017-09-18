@@ -44,7 +44,7 @@ build: vendor
 		-o ${APP}
 
 .PHONY: container
-container: build
+container: build certs
 	@echo "+ $@"
 	@docker build --pull -t $(CONTAINER_IMAGE):$(RELEASE) .
 
