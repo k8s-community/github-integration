@@ -80,7 +80,7 @@ deploy: push
 .PHONY: fmt
 fmt:
 	@echo "+ $@"
-	@go list -f '{{if len .TestGoFiles}}"gofmt -s -l {{.Dir}}"{{end}}' $(shell go list ${PROJECT}/... | grep -v vendor) | xargs -L 1 sh -c
+	@go list -f '{{if len .TestGoFiles}}"gofmt -s -l {{.Dir}}"{{end}}' ${GO_LIST_FILES} | xargs -L 1 sh -c
 
 .PHONY: lint
 lint: bootstrap
