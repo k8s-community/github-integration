@@ -4,3 +4,7 @@
     -   id: go-fmt
     -   id: go-vet
     -   id: go-lint
+-   repo: git://github.com/pre-commit/pre-commit-hooks
+    sha: v0.9.1
+    hooks:
+    -   id: trailing-whitespace
