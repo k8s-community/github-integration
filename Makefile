@@ -28,8 +28,6 @@ ifndef COMMIT
 	COMMIT := git-$(shell git rev-parse --short HEAD)
 endif
 
-BUILDTAGS=
-
 .PHONY: all
 all: build
 
