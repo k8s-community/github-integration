@@ -8,15 +8,15 @@ REGISTRY?=registry.k8s.community
 CA_DIR?=certs
 
 # Use the 0.0.0 tag for testing, it shouldn't clobber any release builds
-RELEASE?=0.3.5
+RELEASE?=0.4.0
 GOOS?=linux
 GOARCH?=amd64
 
 GITHUBINT_LOCAL_PORT?=8080
 
 NAMESPACE?=k8s-community
-INFRASTRUCTURE?=stable
-KUBE_CONTEXT?=inventory
+INFRASTRUCTURE?=k8s-community
+KUBE_CONTEXT?=${INFRASTRUCTURE}
 VALUES?=values-${INFRASTRUCTURE}
 
 CONTAINER_IMAGE?=${REGISTRY}/${NAMESPACE}/${APP}
@@ -27,8 +27,6 @@ REPO_INFO=$(shell git config --get remote.origin.url)
 ifndef COMMIT
 	COMMIT := git-$(shell git rev-parse --short HEAD)
 endif
-
-BUILDTAGS=
 
 .PHONY: all
 all: build
@@ -64,6 +62,7 @@ ifeq ("$(wildcard $(CA_DIR)/ca-certificates.crt)","")
 	@docker rm -f ${CONTAINER_NAME}-certs
 endif
 
+.PHONY: container
 run: container
 	@echo "+ $@"
 	@docker run --name ${CONTAINER_NAME} -p ${GITHUBINT_LOCAL_PORT}:${GITHUBINT_LOCAL_PORT} \
