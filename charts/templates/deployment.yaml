@@ -46,6 +46,10 @@ spec:
             secretKeyRef:
               name: github-integration
               key: integration-private-key
+        - name: CICD_BASE_URL
+          value: {{ .Values.clients.cicd.baseURL }}
+        - name: USERMAN_BASE_URL
+          value: {{ .Values.clients.userman.baseURL }}
         {{- range .Values.externalServices }}
         - name: {{ printf "%s_SERVICE_HOST" .name | upper }}
           value: {{ .host }}
