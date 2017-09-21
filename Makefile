@@ -62,6 +62,7 @@ ifeq ("$(wildcard $(CA_DIR)/ca-certificates.crt)","")
 	@docker rm -f ${CONTAINER_NAME}-certs
 endif
 
+.PHONY: container
 run: container
 	@echo "+ $@"
 	@docker run --name ${CONTAINER_NAME} -p ${GITHUBINT_LOCAL_PORT}:${GITHUBINT_LOCAL_PORT} \
