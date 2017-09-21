@@ -17,7 +17,7 @@ ENV COCKROACHDB_NAME github_integration
 ENV CICD_BASE_URL http://k8s-build-01:8080
 ENV USERMAN_BASE_URL https://services.k8s.community/user-manager
 
-COPY certs /etc/ssl/
+COPY certs /etc/ssl/certs/
 COPY github-integration /
 
 CMD ["/github-integration"]
