@@ -65,12 +65,12 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 	}
 
 	if err != nil {
-		h.Errlog.Printf("cannot process hook (ID %s): %s", hook.Id, err)
+		h.Errlog.Printf("cannot process hook (ID %s, event = %s): %s", hook.Id, hook.Event, err)
 		c.Code(http.StatusInternalServerError).Body(nil)
 		return
 	}
 
-	h.Infolog.Printf("finished to process hook (ID %s)", hook.Id)
+	h.Infolog.Printf("finished to process hook (ID %s, event = %s)", hook.Id, hook.Event)
 	c.Code(http.StatusOK).Body(nil)
 }
 
@@ -132,8 +132,6 @@ func (h *Handler) processPush(c *router.Control, hook *githubhook.Hook) error {
 	client := cicd.NewClient(ciCdURL)
 
 	version := strings.Trim(*evt.Ref, prefix)
-	commitID := *evt.HeadCommit.ID
-	version += "-" + commitID[0:7]
 
 	// run CICD process
 	req := &cicd.BuildRequest{
