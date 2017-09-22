@@ -132,8 +132,6 @@ func (h *Handler) processPush(c *router.Control, hook *githubhook.Hook) error {
 	client := cicd.NewClient(ciCdURL)
 
 	version := strings.Trim(*evt.Ref, prefix)
-	commitID := *evt.HeadCommit.ID
-	version += "-" + commitID[0:7]
 
 	// run CICD process
 	req := &cicd.BuildRequest{
