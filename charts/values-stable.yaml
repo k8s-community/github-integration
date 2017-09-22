@@ -88,7 +88,7 @@ ingress:
     ## except of case when annotatoon `kubernetes.io/tls-acme: 'true'` is present
     ##
     tls:
-    - secretName: services-secret
+    - secretName: tls-secret
       hosts:
       - services.k8s.community
 
