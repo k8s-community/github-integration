@@ -65,12 +65,12 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 	}
 
 	if err != nil {
-		h.Errlog.Printf("cannot process hook (ID %s): %s", hook.Id, err)
+		h.Errlog.Printf("cannot process hook (ID %s, event = %s): %s", hook.Id, hook.Event, err)
 		c.Code(http.StatusInternalServerError).Body(nil)
 		return
 	}
 
-	h.Infolog.Printf("finished to process hook (ID %s)", hook.Id)
+	h.Infolog.Printf("finished to process hook (ID %s, event = %s)", hook.Id, hook.Event)
 	c.Code(http.StatusOK).Body(nil)
 }
 
