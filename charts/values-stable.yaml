@@ -36,7 +36,7 @@ image:
   ##
   registry: registry.k8s.community/k8s-community
   name: github-integration
-  tag: 0.4.0
+  tag: 0.4.1
 
   ## Docker Registry/Hub auth secret name, always use `registry-pull-secret` if registry inside if k8s
   ##
@@ -110,10 +110,11 @@ service:
   ##
   internalPort: 8080
 
-externalServices:
-  - name: cicd
-    host: k8s-build-01
-    port: 8080
+clients:
+  userman:
+    baseURL: https://services.k8s.community/k8s-community/user-manager
+  cicd:
+    baseURL: http://k8s-build-01:8080
 
 ## Resource requests and limits
 ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
