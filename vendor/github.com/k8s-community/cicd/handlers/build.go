@@ -8,6 +8,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/k8s-community/cicd"
 	"github.com/k8s-community/cicd/builder"
+	"github.com/k8s-community/cicd/builder/task"
 	ghIntegr "github.com/k8s-community/github-integration/client"
 	"github.com/satori/go.uuid"
 	"github.com/takama/router"
@@ -15,13 +16,13 @@ import (
 
 // Build is a handler to process Build requests
 type Build struct {
-	state                   *builder.State
+	state                   *builder.Dispatcher
 	log                     logrus.FieldLogger
 	githubIntegrationClient *ghIntegr.Client
 }
 
 // NewBuild returns an instance of Build
-func NewBuild(state *builder.State, log logrus.FieldLogger, ghIntClient *ghIntegr.Client) *Build {
+func NewBuild(state *builder.Dispatcher, log logrus.FieldLogger, ghIntClient *ghIntegr.Client) *Build {
 	return &Build{
 		state: state,
 		log:   log,
@@ -31,14 +32,14 @@ func NewBuild(state *builder.State, log logrus.FieldLogger, ghIntClient *ghInteg
 
 // Status shows current tasks status
 func (b *Build) Status(c *router.Control) {
-	queue, current, total := b.state.GetTasks()
+	queue, current, reassign := b.state.GetTasks()
 
 	response := struct {
-		Total      []string `json:"total"`
+		Reassign   []string `json:"reassign"`
 		Queue      []string `json:"queue"`
 		InProgress []string `json:"inProgress"`
 	}{
-		Total:      total,
+		Reassign:   reassign,
 		Queue:      queue,
 		InProgress: current,
 	}
@@ -77,7 +78,7 @@ func (b *Build) Run(c *router.Control) {
 func (b *Build) processBuild(req *cicd.BuildRequest, requestID string) {
 	namespace := strings.ToLower(req.Username)
 
-	callback := func(state string, description string) {
+	callback := func(taskID string, state string, description string) {
 		// TODO: send result of processing to integration service too!
 		callbackData := ghIntegr.BuildCallback{
 			Username:    req.Username,
@@ -98,10 +99,9 @@ func (b *Build) processBuild(req *cicd.BuildRequest, requestID string) {
 	if req.Version != nil {
 		version = *req.Version
 	}
-	t := builder.NewTask(
-		callback, requestID, req.Task, "github.com", namespace, req.Repository, req.CommitHash, version,
+	t := task.NewCICD(
+		callback, requestID, req.Task, "github.com", req.Repository, req.CommitHash, version, namespace,
 	)
-	b.state.AddTask(&t)
-
-	callback(ghIntegr.StatePending, "Task was queued")
+	callback(requestID, ghIntegr.StatePending, "Task was queued")
+	b.state.AddTask(t)
 }

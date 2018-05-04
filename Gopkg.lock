@@ -10,17 +10,14 @@
 [[projects]]
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
-  revision = "6c8dedd55f8a2e41f605de6d5d66e51ed1f299fc"
-
-[[projects]]
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  revision = "fec3b39b059c0f88fa6b20f5ed012b1aa203a8b4"
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
 
 [[projects]]
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "4b7b445665c8ce4f3c10c753b1884e2c4f09e323"
+  revision = "e48060a28fac52d0f1cb758bc8b87c07bac4a87d"
+  version = "v15.0.0"
 
 [[projects]]
   branch = "master"
@@ -31,41 +28,32 @@
 [[projects]]
   name = "github.com/k8s-community/cicd"
   packages = [".","utils/rest"]
-  revision = "be3d037dcc439b4f5fab74a83d9ac53a6d42f61d"
-  version = "0.3.0"
+  revision = "f1abcb67c9468f3281cf17a235b7881cef101c8c"
+  version = "0.4.4"
 
 [[projects]]
   name = "github.com/k8s-community/user-manager"
   packages = ["client"]
-  revision = "6cf98c17777351032527d6d1242c32de826c2d14"
-  version = "0.1.4"
+  revision = "ca6be86bdbf7df3046a88bb1ceb5794236c09c4a"
+  version = "0.2.2"
 
 [[projects]]
+  branch = "master"
   name = "github.com/lib/pq"
   packages = [".","oid"]
-  revision = "91f10e40ba0dd2d0bf9f93ec1d4077711a78df88"
+  revision = "d34b9ff171c21ad295489235aec8b6626023cd04"
 
 [[projects]]
   name = "github.com/takama/router"
   packages = ["."]
-  revision = "bb2e2b42ce5f3985536263c61ae196a556108254"
-  version = "0.6.3"
-
-[[projects]]
-  name = "golang.org/x/net"
-  packages = ["context"]
-  revision = "e90d6d0afc4c315a0d87a568ae68577cc15149a0"
-
-[[projects]]
-  name = "google.golang.org/appengine"
-  packages = [".","internal","internal/app_identity","internal/base","internal/datastore","internal/log","internal/modules","internal/remote_api"]
-  revision = "170382fa85b10b94728989dfcf6cc818b335c952"
+  revision = "0db9d28f71e2a29c7b82ea6a0851bb0dedeaf744"
+  version = "0.6.5"
 
 [[projects]]
   name = "gopkg.in/reform.v1"
   packages = [".","dialects/postgresql","parse"]
-  revision = "aa2ae077c28edaf600cb1b9067e15aca0b0179bd"
-  version = "v1.2.1"
+  revision = "161dee950cbd38085dac33c87ef81140f2da99cc"
+  version = "v1.3.1"
 
 [[projects]]
   name = "gopkg.in/rjz/githubhook.v0"
@@ -76,6 +64,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "70a97116f21fe2f2eeb9209baec1931e3acb82b002ff1d9b0ddbac21f4aeaa38"
+  inputs-digest = "6a38b6f4e52a426ed84b1054255e9d480b5a07dba3a11724ea7f0bd19423d82d"
   solver-name = "gps-cdcl"
   solver-version = 1

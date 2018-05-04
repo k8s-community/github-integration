@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/k8s-community/cicd.svg?branch=master)](https://travis-ci.org/k8s-community/cicd)
+
 # cicd
 
 The simplest CI/CD service to `make test` and `make build`.

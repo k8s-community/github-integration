@@ -19,7 +19,7 @@ func ExampleBuild() {
 	if err != nil {
 		fmt.Printf("Server error: %s", err)
 	} else if resp.Error != nil {
-		fmt.Printf("Client's errors %s: %s", resp.Error.Code, resp.Error.Message)
+		fmt.Printf("Client's errors %d: %s", resp.Error.Code, resp.Error.Message)
 	} else if resp.Data != nil {
 		fmt.Printf("Build was created, request ID is: %s", resp.Data.RequestID)
 	} else {

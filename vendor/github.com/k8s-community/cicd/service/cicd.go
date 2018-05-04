@@ -8,14 +8,16 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/k8s-community/cicd/builder"
+	"github.com/k8s-community/cicd/builder/runners"
 	"github.com/k8s-community/cicd/handlers"
 	"github.com/k8s-community/cicd/version"
 	ghIntegr "github.com/k8s-community/github-integration/client"
-	common_handlers "github.com/k8s-community/handlers"
 	"github.com/octago/sflags/gen/gflag"
+	"github.com/openprovider/handlers/info"
 	"github.com/takama/daemon"
 	"github.com/takama/router"
 )
@@ -28,14 +30,15 @@ type HTTPConfig struct {
 
 // Config ...
 type Config struct {
-	SERVICE HTTPConfig
+	SERVICE         HTTPConfig
+	GHIntegrBaseURL string `flag:"githubint-base-url"`
 }
 
 func main() {
 	// To be able to work under daemon we need to set some environment...
-	/*os.Setenv("GOPATH", "/root/gocode")
+	os.Setenv("GOPATH", "/root/gocode")
 	os.Setenv("PATH", "$PATH:/usr/bin:/usr/local/bin:/usr/local/go/bin:/root/gocode/bin")
-	os.Setenv("HOME", "/root")*/
+	os.Setenv("HOME", "/root")
 
 	log := logrus.New()
 	log.Formatter = new(logrus.TextFormatter)
@@ -45,6 +48,7 @@ func main() {
 			Host: "0.0.0.0",
 			Port: 8080,
 		},
+		GHIntegrBaseURL: "https://services.k8s.community/github-integration",
 	}
 	err := gflag.ParseToDef(cfg)
 	if err != nil {
@@ -73,8 +77,10 @@ func main() {
 
 	ghIntBaseURL, err := getFromEnv("GITHUBINT_BASE_URL")
 	if err != nil {
-		ghIntBaseURL = "https://services.k8s.community/github-integration" // todo: fix to flags
+		ghIntBaseURL = cfg.GHIntegrBaseURL
 	}
+
+	logger.Infof("Github integration base URL is %s", ghIntBaseURL)
 
 	ghIntClient, err := ghIntegr.NewClient(nil, ghIntBaseURL)
 	if err != nil {
@@ -82,7 +88,8 @@ func main() {
 	}
 
 	// TODO: add graceful shutdown
-	state := builder.NewState(builder.Process, logger, 10)
+	runner := runners.NewLocal(log)
+	state := builder.NewDispatcher(runner.Process, logger, 10, 15*time.Second)
 
 	buildHandler := handlers.NewBuild(state, logger, ghIntClient)
 
@@ -91,9 +98,7 @@ func main() {
 	r.POST("/api/v1/build", buildHandler.Run)
 	r.GET("/api/v1/status", buildHandler.Status)
 
-	r.GET("/info", func(c *router.Control) {
-		common_handlers.Info(c, version.RELEASE, version.REPO, version.COMMIT)
-	})
+	r.GET("/info", info.Handler(version.RELEASE, version.REPO, version.COMMIT))
 	r.GET("/healthz", func(c *router.Control) {
 		c.Code(http.StatusOK).Body(http.StatusText(http.StatusOK))
 	})
