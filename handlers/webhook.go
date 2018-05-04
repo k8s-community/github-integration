@@ -76,7 +76,7 @@ func (h *Handler) WebHookHandler(c *router.Control) {
 
 // initialUserManagement is used for user activation in k8s system
 func (h *Handler) initialUserManagement(hook *githubhook.Hook) error {
-	evt := github.IntegrationInstallationRepositoriesEvent{}
+	evt := github.InstallationRepositoriesEvent{}
 
 	err := hook.Extract(&evt)
 	if err != nil {
@@ -189,7 +189,7 @@ func (h *Handler) processCreate(c *router.Control, hook *githubhook.Hook) error 
 
 // saveInstallation saves installation in memory
 func (h *Handler) saveInstallation(hook *githubhook.Hook) error {
-	evt := github.IntegrationInstallationEvent{}
+	evt := github.InstallationEvent{}
 
 	err := hook.Extract(&evt)
 	if err != nil {

@@ -18,7 +18,7 @@ ENV CICD_BASE_URL http://k8s-build-01:8080
 ENV USERMAN_BASE_URL https://services.k8s.community/user-manager
 
 COPY certs /etc/ssl/certs/
-COPY github-integration /
+COPY bin/linux-amd64/github-integration /
 
 CMD ["/github-integration"]
 

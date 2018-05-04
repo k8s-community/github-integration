@@ -1,0 +1,30 @@
+hash: cde3d9ecd1aef98201ba472dff104bd75108843c2a54e32b2f05de0ba64ff82f
+updated: 2017-09-18T23:12:26.979276288+07:00
+imports:
+- name: github.com/k8s-community/github-integration
+  version: fee9c36fe6b777845588c89ba8a2097afb1ac93d
+  subpackages:
+  - client
+- name: github.com/k8s-community/handlers
+  version: 38a673f26616c3a99a720e13fa0eb7ebe0b4ca5d
+- name: github.com/octago/sflags
+  version: efb9cde83c817d30590cf630661142196dea4b6b
+  subpackages:
+  - gen/gflag
+- name: github.com/openprovider/handlers
+  version: 38a673f26616c3a99a720e13fa0eb7ebe0b4ca5d
+  subpackages:
+  - info
+- name: github.com/satori/go.uuid
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: github.com/Sirupsen/logrus
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
+- name: github.com/takama/daemon
+  version: ac5a22749fceffb2bc7aba49c19787751f4b34f7
+- name: github.com/takama/router
+  version: 0db9d28f71e2a29c7b82ea6a0851bb0dedeaf744
+- name: golang.org/x/sys
+  version: 1e99a4f9d247b28c670884b9a8d6801f39a47b77
+  subpackages:
+  - unix
+testImports: []

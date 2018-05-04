@@ -5,12 +5,14 @@ BUILDTAGS=
 # Use the 0.0.0 tag for testing, it shouldn't clobber any release builds
 APP=cicd
 USERSPACE?=k8s-community
-RELEASE?=0.3.0
+RELEASE?=0.4.4
 PROJECT?=github.com/${USERSPACE}/${APP}
 GOOS?=linux
-REGISTRY?=registry.k8s.community
+
+# App configuration: what service to listen to etc
 SERVICE_HOST?=0.0.0.0
 SERVICE_PORT?=8080
+GITHUBINT_BASE_URL?=https://services.k8s.community/k8s-community/github-integration
 
 REPO_INFO=$(shell git config --get remote.origin.url)
 
@@ -22,9 +24,6 @@ vendor: clean
 	go get -u github.com/Masterminds/glide \
 	&& glide install
 
-utils:
-	go get -u github.com/golang/lint/golint
-
 build: vendor
 	cd service \
 	&& CGO_ENABLED=0 GOOS=${GOOS} go build -a -installsuffix cgo \
@@ -32,7 +31,8 @@ build: vendor
 		-o ../${APP}
 
 install: build
-	sudo ./${APP} install --service-host ${SERVICE_HOST} --service-port ${SERVICE_PORT}
+	sudo ./${APP} install --service-host ${SERVICE_HOST} --service-port ${SERVICE_PORT} \
+	 --githubint-base-url ${GITHUBINT_BASE_URL}
 
 remove:
 	sudo ./${APP} remove
@@ -49,6 +49,7 @@ fmt:
 
 lint: utils
 	@echo "+ $@"
+	go get -u github.com/golang/lint/golint
 	@go list -f '{{if len .TestGoFiles}}"golint {{.Dir}}/..."{{end}}' $(shell go list ${PROJECT}/... | grep -v vendor) | xargs -L 1 sh -c
 
 vet:
