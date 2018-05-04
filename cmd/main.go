@@ -49,6 +49,7 @@ func main() {
 		errors = append(errors, err)
 	}
 
+	dbHost = "10.254.49.113"
 	db, err := startupDB(dbHost, dbPort, dbUser, dbPass, dbName)
 	if err != nil {
 		log.Fatalf("Couldn't start up DB: %+v", err)
