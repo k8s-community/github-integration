@@ -15,11 +15,13 @@ import (
 )
 
 func TestGitService_GetTree(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/git/trees/s", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
+		if m := "GET"; m != r.Method {
+			t.Errorf("Request method = %v, want %v", r.Method, m)
+		}
 		fmt.Fprint(w, `{
 			  "sha": "s",
 			  "tree": [ { "type": "blob" } ]
@@ -45,15 +47,12 @@ func TestGitService_GetTree(t *testing.T) {
 }
 
 func TestGitService_GetTree_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Git.GetTree(context.Background(), "%", "%", "%", false)
 	testURLParseError(t, err)
 }
 
 func TestGitService_CreateTree(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := []TreeEntry{
@@ -69,7 +68,9 @@ func TestGitService_CreateTree(t *testing.T) {
 		v := new(createTree)
 		json.NewDecoder(r.Body).Decode(v)
 
-		testMethod(t, r, "POST")
+		if m := "POST"; m != r.Method {
+			t.Errorf("Request method = %v, want %v", r.Method, m)
+		}
 
 		want := &createTree{
 			BaseTree: "b",
@@ -117,7 +118,7 @@ func TestGitService_CreateTree(t *testing.T) {
 }
 
 func TestGitService_CreateTree_Content(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := []TreeEntry{
@@ -132,7 +133,9 @@ func TestGitService_CreateTree_Content(t *testing.T) {
 		v := new(createTree)
 		json.NewDecoder(r.Body).Decode(v)
 
-		testMethod(t, r, "POST")
+		if m := "POST"; m != r.Method {
+			t.Errorf("Request method = %v, want %v", r.Method, m)
+		}
 
 		want := &createTree{
 			BaseTree: "b",
@@ -183,9 +186,6 @@ func TestGitService_CreateTree_Content(t *testing.T) {
 }
 
 func TestGitService_CreateTree_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Git.CreateTree(context.Background(), "%", "%", "", nil)
 	testURLParseError(t, err)
 }

@@ -11,19 +11,17 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 )
 
 func TestIssuesService_List_all(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
-	acceptHeaders := []string{mediaTypeReactionsPreview, mediaTypeGraphQLNodeIDPreview}
 	mux.HandleFunc("/issues", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "Accept", strings.Join(acceptHeaders, ", "))
+		testHeader(t, r, "Accept", mediaTypeReactionsPreview)
 		testFormValues(t, r, values{
 			"filter":    "all",
 			"state":     "closed",
@@ -54,13 +52,12 @@ func TestIssuesService_List_all(t *testing.T) {
 }
 
 func TestIssuesService_List_owned(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
-	acceptHeaders := []string{mediaTypeReactionsPreview, mediaTypeGraphQLNodeIDPreview}
 	mux.HandleFunc("/user/issues", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "Accept", strings.Join(acceptHeaders, ", "))
+		testHeader(t, r, "Accept", mediaTypeReactionsPreview)
 		fmt.Fprint(w, `[{"number":1}]`)
 	})
 
@@ -76,13 +73,12 @@ func TestIssuesService_List_owned(t *testing.T) {
 }
 
 func TestIssuesService_ListByOrg(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
-	acceptHeaders := []string{mediaTypeReactionsPreview, mediaTypeGraphQLNodeIDPreview}
 	mux.HandleFunc("/orgs/o/issues", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "Accept", strings.Join(acceptHeaders, ", "))
+		testHeader(t, r, "Accept", mediaTypeReactionsPreview)
 		fmt.Fprint(w, `[{"number":1}]`)
 	})
 
@@ -98,21 +94,17 @@ func TestIssuesService_ListByOrg(t *testing.T) {
 }
 
 func TestIssuesService_ListByOrg_invalidOrg(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Issues.ListByOrg(context.Background(), "%", nil)
 	testURLParseError(t, err)
 }
 
 func TestIssuesService_ListByRepo(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
-	acceptHeaders := []string{mediaTypeReactionsPreview, mediaTypeGraphQLNodeIDPreview}
 	mux.HandleFunc("/repos/o/r/issues", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "Accept", strings.Join(acceptHeaders, ", "))
+		testHeader(t, r, "Accept", mediaTypeReactionsPreview)
 		testFormValues(t, r, values{
 			"milestone": "*",
 			"state":     "closed",
@@ -144,21 +136,17 @@ func TestIssuesService_ListByRepo(t *testing.T) {
 }
 
 func TestIssuesService_ListByRepo_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Issues.ListByRepo(context.Background(), "%", "r", nil)
 	testURLParseError(t, err)
 }
 
 func TestIssuesService_Get(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
-	acceptHeaders := []string{mediaTypeReactionsPreview, mediaTypeGraphQLNodeIDPreview}
 	mux.HandleFunc("/repos/o/r/issues/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "Accept", strings.Join(acceptHeaders, ", "))
+		testHeader(t, r, "Accept", mediaTypeReactionsPreview)
 		fmt.Fprint(w, `{"number":1, "labels": [{"url": "u", "name": "n", "color": "c"}]}`)
 	})
 
@@ -181,15 +169,12 @@ func TestIssuesService_Get(t *testing.T) {
 }
 
 func TestIssuesService_Get_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Issues.Get(context.Background(), "%", "r", 1)
 	testURLParseError(t, err)
 }
 
 func TestIssuesService_Create(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := &IssueRequest{
@@ -204,7 +189,6 @@ func TestIssuesService_Create(t *testing.T) {
 		json.NewDecoder(r.Body).Decode(v)
 
 		testMethod(t, r, "POST")
-		testHeader(t, r, "Accept", mediaTypeGraphQLNodeIDPreview)
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -224,15 +208,12 @@ func TestIssuesService_Create(t *testing.T) {
 }
 
 func TestIssuesService_Create_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Issues.Create(context.Background(), "%", "r", nil)
 	testURLParseError(t, err)
 }
 
 func TestIssuesService_Edit(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := &IssueRequest{Title: String("t")}
@@ -242,7 +223,6 @@ func TestIssuesService_Edit(t *testing.T) {
 		json.NewDecoder(r.Body).Decode(v)
 
 		testMethod(t, r, "PATCH")
-		testHeader(t, r, "Accept", mediaTypeGraphQLNodeIDPreview)
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
@@ -262,15 +242,12 @@ func TestIssuesService_Edit(t *testing.T) {
 }
 
 func TestIssuesService_Edit_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Issues.Edit(context.Background(), "%", "r", 1, nil)
 	testURLParseError(t, err)
 }
 
 func TestIssuesService_Lock(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/issues/1/lock", func(w http.ResponseWriter, r *http.Request) {
@@ -285,7 +262,7 @@ func TestIssuesService_Lock(t *testing.T) {
 }
 
 func TestIssuesService_Unlock(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/issues/1/lock", func(w http.ResponseWriter, r *http.Request) {

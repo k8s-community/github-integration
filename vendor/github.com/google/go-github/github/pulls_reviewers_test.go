@@ -14,7 +14,7 @@ import (
 )
 
 func TestRequestReviewers(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/pulls/1/requested_reviewers", func(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +36,7 @@ func TestRequestReviewers(t *testing.T) {
 }
 
 func TestRemoveReviewers(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/pulls/1/requested_reviewers", func(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +52,7 @@ func TestRemoveReviewers(t *testing.T) {
 }
 
 func TestListReviewers(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/pulls/1/requested_reviewers", func(w http.ResponseWriter, r *http.Request) {
@@ -70,12 +70,12 @@ func TestListReviewers(t *testing.T) {
 		Users: []*User{
 			{
 				Login: String("octocat"),
-				ID:    Int64(1),
+				ID:    Int(1),
 			},
 		},
 		Teams: []*Team{
 			{
-				ID:   Int64(1),
+				ID:   Int(1),
 				Name: String("Justice League"),
 			},
 		},
@@ -86,7 +86,7 @@ func TestListReviewers(t *testing.T) {
 }
 
 func TestListReviewers_withOptions(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/pulls/1/requested_reviewers", func(w http.ResponseWriter, r *http.Request) {

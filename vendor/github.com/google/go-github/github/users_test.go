@@ -19,7 +19,7 @@ func TestUser_marshall(t *testing.T) {
 
 	u := &User{
 		Login:       String("l"),
-		ID:          Int64(1),
+		ID:          Int(1),
 		URL:         String("u"),
 		AvatarURL:   String("a"),
 		GravatarID:  String("g"),
@@ -57,7 +57,7 @@ func TestUser_marshall(t *testing.T) {
 }
 
 func TestUsersService_Get_authenticatedUser(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
@@ -70,14 +70,14 @@ func TestUsersService_Get_authenticatedUser(t *testing.T) {
 		t.Errorf("Users.Get returned error: %v", err)
 	}
 
-	want := &User{ID: Int64(1)}
+	want := &User{ID: Int(1)}
 	if !reflect.DeepEqual(user, want) {
 		t.Errorf("Users.Get returned %+v, want %+v", user, want)
 	}
 }
 
 func TestUsersService_Get_specifiedUser(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/users/u", func(w http.ResponseWriter, r *http.Request) {
@@ -90,22 +90,19 @@ func TestUsersService_Get_specifiedUser(t *testing.T) {
 		t.Errorf("Users.Get returned error: %v", err)
 	}
 
-	want := &User{ID: Int64(1)}
+	want := &User{ID: Int(1)}
 	if !reflect.DeepEqual(user, want) {
 		t.Errorf("Users.Get returned %+v, want %+v", user, want)
 	}
 }
 
 func TestUsersService_Get_invalidUser(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Users.Get(context.Background(), "%")
 	testURLParseError(t, err)
 }
 
 func TestUsersService_GetByID(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/1", func(w http.ResponseWriter, r *http.Request) {
@@ -118,14 +115,14 @@ func TestUsersService_GetByID(t *testing.T) {
 		t.Fatalf("Users.GetByID returned error: %v", err)
 	}
 
-	want := &User{ID: Int64(1)}
+	want := &User{ID: Int(1)}
 	if !reflect.DeepEqual(user, want) {
 		t.Errorf("Users.GetByID returned %+v, want %+v", user, want)
 	}
 }
 
 func TestUsersService_Edit(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := &User{Name: String("n")}
@@ -147,14 +144,14 @@ func TestUsersService_Edit(t *testing.T) {
 		t.Errorf("Users.Edit returned error: %v", err)
 	}
 
-	want := &User{ID: Int64(1)}
+	want := &User{ID: Int(1)}
 	if !reflect.DeepEqual(user, want) {
 		t.Errorf("Users.Edit returned %+v, want %+v", user, want)
 	}
 }
 
 func TestUsersService_ListAll(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
@@ -169,14 +166,14 @@ func TestUsersService_ListAll(t *testing.T) {
 		t.Errorf("Users.Get returned error: %v", err)
 	}
 
-	want := []*User{{ID: Int64(2)}}
+	want := []*User{{ID: Int(2)}}
 	if !reflect.DeepEqual(users, want) {
 		t.Errorf("Users.ListAll returned %+v, want %+v", users, want)
 	}
 }
 
 func TestUsersService_ListInvitations(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/repository_invitations", func(w http.ResponseWriter, r *http.Request) {
@@ -190,14 +187,14 @@ func TestUsersService_ListInvitations(t *testing.T) {
 		t.Errorf("Users.ListInvitations returned error: %v", err)
 	}
 
-	want := []*RepositoryInvitation{{ID: Int64(1)}, {ID: Int64(2)}}
+	want := []*RepositoryInvitation{{ID: Int(1)}, {ID: Int(2)}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Users.ListInvitations = %+v, want %+v", got, want)
 	}
 }
 
 func TestUsersService_ListInvitations_withOptions(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/repository_invitations", func(w http.ResponseWriter, r *http.Request) {
@@ -215,7 +212,7 @@ func TestUsersService_ListInvitations_withOptions(t *testing.T) {
 	}
 }
 func TestUsersService_AcceptInvitation(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/repository_invitations/1", func(w http.ResponseWriter, r *http.Request) {
@@ -230,7 +227,7 @@ func TestUsersService_AcceptInvitation(t *testing.T) {
 }
 
 func TestUsersService_DeclineInvitation(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/repository_invitations/1", func(w http.ResponseWriter, r *http.Request) {

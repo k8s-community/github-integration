@@ -15,7 +15,7 @@ import (
 )
 
 func TestActivityService_ListStargazers(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/stargazers", func(w http.ResponseWriter, r *http.Request) {
@@ -33,14 +33,14 @@ func TestActivityService_ListStargazers(t *testing.T) {
 		t.Errorf("Activity.ListStargazers returned error: %v", err)
 	}
 
-	want := []*Stargazer{{StarredAt: &Timestamp{time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC)}, User: &User{ID: Int64(1)}}}
+	want := []*Stargazer{{StarredAt: &Timestamp{time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC)}, User: &User{ID: Int(1)}}}
 	if !reflect.DeepEqual(stargazers, want) {
 		t.Errorf("Activity.ListStargazers returned %+v, want %+v", stargazers, want)
 	}
 }
 
 func TestActivityService_ListStarred_authenticatedUser(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/starred", func(w http.ResponseWriter, r *http.Request) {
@@ -54,14 +54,14 @@ func TestActivityService_ListStarred_authenticatedUser(t *testing.T) {
 		t.Errorf("Activity.ListStarred returned error: %v", err)
 	}
 
-	want := []*StarredRepository{{StarredAt: &Timestamp{time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC)}, Repository: &Repository{ID: Int64(1)}}}
+	want := []*StarredRepository{{StarredAt: &Timestamp{time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC)}, Repository: &Repository{ID: Int(1)}}}
 	if !reflect.DeepEqual(repos, want) {
 		t.Errorf("Activity.ListStarred returned %+v, want %+v", repos, want)
 	}
 }
 
 func TestActivityService_ListStarred_specifiedUser(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/users/u/starred", func(w http.ResponseWriter, r *http.Request) {
@@ -81,22 +81,19 @@ func TestActivityService_ListStarred_specifiedUser(t *testing.T) {
 		t.Errorf("Activity.ListStarred returned error: %v", err)
 	}
 
-	want := []*StarredRepository{{StarredAt: &Timestamp{time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC)}, Repository: &Repository{ID: Int64(2)}}}
+	want := []*StarredRepository{{StarredAt: &Timestamp{time.Date(2002, time.February, 10, 15, 30, 0, 0, time.UTC)}, Repository: &Repository{ID: Int(2)}}}
 	if !reflect.DeepEqual(repos, want) {
 		t.Errorf("Activity.ListStarred returned %+v, want %+v", repos, want)
 	}
 }
 
 func TestActivityService_ListStarred_invalidUser(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Activity.ListStarred(context.Background(), "%", nil)
 	testURLParseError(t, err)
 }
 
 func TestActivityService_IsStarred_hasStar(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/starred/o/r", func(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +111,7 @@ func TestActivityService_IsStarred_hasStar(t *testing.T) {
 }
 
 func TestActivityService_IsStarred_noStar(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/starred/o/r", func(w http.ResponseWriter, r *http.Request) {
@@ -132,15 +129,12 @@ func TestActivityService_IsStarred_noStar(t *testing.T) {
 }
 
 func TestActivityService_IsStarred_invalidID(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Activity.IsStarred(context.Background(), "%", "%")
 	testURLParseError(t, err)
 }
 
 func TestActivityService_Star(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/starred/o/r", func(w http.ResponseWriter, r *http.Request) {
@@ -154,15 +148,12 @@ func TestActivityService_Star(t *testing.T) {
 }
 
 func TestActivityService_Star_invalidID(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, err := client.Activity.Star(context.Background(), "%", "%")
 	testURLParseError(t, err)
 }
 
 func TestActivityService_Unstar(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/user/starred/o/r", func(w http.ResponseWriter, r *http.Request) {
@@ -176,9 +167,6 @@ func TestActivityService_Unstar(t *testing.T) {
 }
 
 func TestActivityService_Unstar_invalidID(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, err := client.Activity.Unstar(context.Background(), "%", "%")
 	testURLParseError(t, err)
 }

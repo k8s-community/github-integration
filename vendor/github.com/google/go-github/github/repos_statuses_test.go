@@ -15,7 +15,7 @@ import (
 )
 
 func TestRepositoriesService_ListStatuses(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/commits/r/statuses", func(w http.ResponseWriter, r *http.Request) {
@@ -30,22 +30,19 @@ func TestRepositoriesService_ListStatuses(t *testing.T) {
 		t.Errorf("Repositories.ListStatuses returned error: %v", err)
 	}
 
-	want := []*RepoStatus{{ID: Int64(1)}}
+	want := []*RepoStatus{{ID: Int(1)}}
 	if !reflect.DeepEqual(statuses, want) {
 		t.Errorf("Repositories.ListStatuses returned %+v, want %+v", statuses, want)
 	}
 }
 
 func TestRepositoriesService_ListStatuses_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Repositories.ListStatuses(context.Background(), "%", "r", "r", nil)
 	testURLParseError(t, err)
 }
 
 func TestRepositoriesService_CreateStatus(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := &RepoStatus{State: String("s"), TargetURL: String("t"), Description: String("d")}
@@ -66,22 +63,19 @@ func TestRepositoriesService_CreateStatus(t *testing.T) {
 		t.Errorf("Repositories.CreateStatus returned error: %v", err)
 	}
 
-	want := &RepoStatus{ID: Int64(1)}
+	want := &RepoStatus{ID: Int(1)}
 	if !reflect.DeepEqual(status, want) {
 		t.Errorf("Repositories.CreateStatus returned %+v, want %+v", status, want)
 	}
 }
 
 func TestRepositoriesService_CreateStatus_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Repositories.CreateStatus(context.Background(), "%", "r", "r", nil)
 	testURLParseError(t, err)
 }
 
 func TestRepositoriesService_GetCombinedStatus(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/commits/r/status", func(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +90,7 @@ func TestRepositoriesService_GetCombinedStatus(t *testing.T) {
 		t.Errorf("Repositories.GetCombinedStatus returned error: %v", err)
 	}
 
-	want := &CombinedStatus{State: String("success"), Statuses: []RepoStatus{{ID: Int64(1)}}}
+	want := &CombinedStatus{State: String("success"), Statuses: []RepoStatus{{ID: Int(1)}}}
 	if !reflect.DeepEqual(status, want) {
 		t.Errorf("Repositories.GetCombinedStatus returned %+v, want %+v", status, want)
 	}

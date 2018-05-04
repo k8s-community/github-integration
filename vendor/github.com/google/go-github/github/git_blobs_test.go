@@ -15,13 +15,13 @@ import (
 )
 
 func TestGitService_GetBlob(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	mux.HandleFunc("/repos/o/r/git/blobs/s", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-		testHeader(t, r, "Accept", mediaTypeGraphQLNodeIDPreview)
-
+		if m := "GET"; m != r.Method {
+			t.Errorf("Request method = %v, want %v", r.Method, m)
+		}
 		fmt.Fprint(w, `{
 			  "sha": "s",
 			  "content": "blob content"
@@ -44,15 +44,12 @@ func TestGitService_GetBlob(t *testing.T) {
 }
 
 func TestGitService_GetBlob_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Git.GetBlob(context.Background(), "%", "%", "%")
 	testURLParseError(t, err)
 }
 
 func TestGitService_CreateBlob(t *testing.T) {
-	client, mux, _, teardown := setup()
+	setup()
 	defer teardown()
 
 	input := &Blob{
@@ -66,8 +63,9 @@ func TestGitService_CreateBlob(t *testing.T) {
 		v := new(Blob)
 		json.NewDecoder(r.Body).Decode(v)
 
-		testMethod(t, r, "POST")
-		testHeader(t, r, "Accept", mediaTypeGraphQLNodeIDPreview)
+		if m := "POST"; m != r.Method {
+			t.Errorf("Request method = %v, want %v", r.Method, m)
+		}
 
 		want := input
 		if !reflect.DeepEqual(v, want) {
@@ -95,9 +93,6 @@ func TestGitService_CreateBlob(t *testing.T) {
 }
 
 func TestGitService_CreateBlob_invalidOwner(t *testing.T) {
-	client, _, _, teardown := setup()
-	defer teardown()
-
 	_, _, err := client.Git.CreateBlob(context.Background(), "%", "%", &Blob{})
 	testURLParseError(t, err)
 }

@@ -268,24 +268,6 @@ type LabelEvent struct {
 	Installation *Installation `json:"installation,omitempty"`
 }
 
-// MarketplacePurchaseEvent is triggered when a user purchases, cancels, or changes
-// their GitHub Marketplace plan.
-// Webhook event name "marketplace_purchase".
-//
-// Github API docs: https://developer.github.com/v3/activity/events/types/#marketplacepurchaseevent
-type MarketplacePurchaseEvent struct {
-	// Action is the action that was performed. Possible values are:
-	// "purchased", "cancelled", "changed".
-	Action *string `json:"action,omitempty"`
-
-	// The following fields are only populated by Webhook events.
-	EffectiveDate               *Timestamp           `json:"effective_date,omitempty"`
-	MarketplacePurchase         *MarketplacePurchase `json:"marketplace_purchase,omitempty"`
-	PreviousMarketplacePurchase *MarketplacePurchase `json:"previous_marketplace_purchase,omitempty"`
-	Sender                      *User                `json:"sender,omitempty"`
-	Installation                *Installation        `json:"installation,omitempty"`
-}
-
 // MemberEvent is triggered when a user is added as a collaborator to a repository.
 // The Webhook event name is "member".
 //
@@ -392,7 +374,7 @@ type PageBuildEvent struct {
 	Build *PagesBuild `json:"build,omitempty"`
 
 	// The following fields are only populated by Webhook events.
-	ID           *int64        `json:"id,omitempty"`
+	ID           *int          `json:"id,omitempty"`
 	Repo         *Repository   `json:"repository,omitempty"`
 	Sender       *User         `json:"sender,omitempty"`
 	Installation *Installation `json:"installation,omitempty"`
@@ -405,7 +387,7 @@ type PingEvent struct {
 	// Random string of GitHub zen.
 	Zen *string `json:"zen,omitempty"`
 	// The ID of the webhook that triggered the ping.
-	HookID *int64 `json:"hook_id,omitempty"`
+	HookID *int `json:"hook_id,omitempty"`
 	// The webhook configuration.
 	Hook         *Hook         `json:"hook,omitempty"`
 	Installation *Installation `json:"installation,omitempty"`
@@ -434,7 +416,7 @@ type ProjectEvent struct {
 type ProjectCardEvent struct {
 	Action      *string            `json:"action,omitempty"`
 	Changes     *ProjectCardChange `json:"changes,omitempty"`
-	AfterID     *int64             `json:"after_id,omitempty"`
+	AfterID     *int               `json:"after_id,omitempty"`
 	ProjectCard *ProjectCard       `json:"project_card,omitempty"`
 
 	// The following fields are only populated by Webhook events.
@@ -451,7 +433,7 @@ type ProjectCardEvent struct {
 type ProjectColumnEvent struct {
 	Action        *string              `json:"action,omitempty"`
 	Changes       *ProjectColumnChange `json:"changes,omitempty"`
-	AfterID       *int64               `json:"after_id,omitempty"`
+	AfterID       *int                 `json:"after_id,omitempty"`
 	ProjectColumn *ProjectColumn       `json:"project_column,omitempty"`
 
 	// The following fields are only populated by Webhook events.
@@ -479,10 +461,9 @@ type PublicEvent struct {
 //
 // GitHub API docs: https://developer.github.com/v3/activity/events/types/#pullrequestevent
 type PullRequestEvent struct {
-	// Action is the action that was performed. Possible values are:
-	// "assigned", "unassigned", "review_requested", "review_request_removed", "labeled", "unlabeled",
-	// "opened", "closed", "reopened", "synchronize", "edited".
-	// If the action is "closed" and the merged key is false,
+	// Action is the action that was performed. Possible values are: "assigned",
+	// "unassigned", "labeled", "unlabeled", "opened", "closed", or "reopened",
+	// "synchronize", "edited". If the action is "closed" and the merged key is false,
 	// the pull request was closed with unmerged commits. If the action is "closed"
 	// and the merged key is true, the pull request was merged.
 	Action      *string      `json:"action,omitempty"`
@@ -490,11 +471,10 @@ type PullRequestEvent struct {
 	PullRequest *PullRequest `json:"pull_request,omitempty"`
 
 	// The following fields are only populated by Webhook events.
-	Changes            *EditChange   `json:"changes,omitempty"`
-	RequestedReviewers []*User       `json:"requested_reviewers,omitempty"` // Populated in "review_requested", "review_request_removed" event deliveries.
-	Repo               *Repository   `json:"repository,omitempty"`
-	Sender             *User         `json:"sender,omitempty"`
-	Installation       *Installation `json:"installation,omitempty"`
+	Changes      *EditChange   `json:"changes,omitempty"`
+	Repo         *Repository   `json:"repository,omitempty"`
+	Sender       *User         `json:"sender,omitempty"`
+	Installation *Installation `json:"installation,omitempty"`
 }
 
 // PullRequestReviewEvent is triggered when a review is submitted on a pull
@@ -541,7 +521,7 @@ type PullRequestReviewCommentEvent struct {
 //
 // GitHub API docs: https://developer.github.com/v3/activity/events/types/#pushevent
 type PushEvent struct {
-	PushID       *int64            `json:"push_id,omitempty"`
+	PushID       *int              `json:"push_id,omitempty"`
 	Head         *string           `json:"head,omitempty"`
 	Ref          *string           `json:"ref,omitempty"`
 	Size         *int              `json:"size,omitempty"`
@@ -593,7 +573,7 @@ func (p PushEventCommit) String() string {
 
 // PushEventRepository represents the repo object in a PushEvent payload.
 type PushEventRepository struct {
-	ID              *int64              `json:"id,omitempty"`
+	ID              *int                `json:"id,omitempty"`
 	Name            *string             `json:"name,omitempty"`
 	FullName        *string             `json:"full_name,omitempty"`
 	Owner           *PushEventRepoOwner `json:"owner,omitempty"`
@@ -683,7 +663,7 @@ type StatusEvent struct {
 	Branches    []*Branch `json:"branches,omitempty"`
 
 	// The following fields are only populated by Webhook events.
-	ID           *int64            `json:"id,omitempty"`
+	ID           *int              `json:"id,omitempty"`
 	Name         *string           `json:"name,omitempty"`
 	Context      *string           `json:"context,omitempty"`
 	Commit       *RepositoryCommit `json:"commit,omitempty"`
