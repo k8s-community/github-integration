@@ -24,32 +24,29 @@ func main() {
 	var errors []error
 
 	// Database settings
-	dbHost, err := getFromEnv("COCKROACHDB_PUBLIC_SERVICE_HOST")
+	namespace, err := getFromEnv("POD_NAMESPACE")
 	if err != nil {
 		errors = append(errors, err)
 	}
 
-	dbPort, err := getFromEnv("COCKROACHDB_PUBLIC_SERVICE_PORT")
+	dbUser, err := getFromEnv("GITHUBDB_USER")
 	if err != nil {
 		errors = append(errors, err)
 	}
 
-	dbUser, err := getFromEnv("COCKROACHDB_USER")
+	dbPass, err := getFromEnv("GITHUBDB_PASSWORD")
 	if err != nil {
 		errors = append(errors, err)
 	}
 
-	dbPass, err := getFromEnv("COCKROACHDB_PASSWORD")
+	dbName, err := getFromEnv("GITHUBDB_NAME")
 	if err != nil {
 		errors = append(errors, err)
 	}
 
-	dbName, err := getFromEnv("COCKROACHDB_NAME")
-	if err != nil {
-		errors = append(errors, err)
-	}
+	dbHost := fmt.Sprintf("%s.%s", "db-github", namespace)
+	dbPort := "5432"
 
-	dbHost = "10.254.49.113"
 	db, err := startupDB(dbHost, dbPort, dbUser, dbPass, dbName)
 	if err != nil {
 		log.Fatalf("Couldn't start up DB: %+v", err)

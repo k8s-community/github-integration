@@ -8,11 +8,9 @@ ENV GITHUBINT_PRIV_KEY "Private key is in integration settings on Github"
 ENV GITHUBINT_INTEGRATION_ID "Integration ID is in it's settings on Github"
 
 # DB parameters
-ENV COCKROACHDB_PUBLIC_SERVICE_HOST localhost
-ENV COCKROACHDB_PUBLIC_SERVICE_PORT 26257
-ENV COCKROACHDB_USER githubint
-ENV COCKROACHDB_PASSWORD githubint
-ENV COCKROACHDB_NAME github_integration
+ENV GITHUBDB_USER githubint
+ENV GITHUBDB_PASSWORD githubint
+ENV GITHUBDB_NAME github_integration
 
 ENV CICD_BASE_URL http://k8s-build-01:8080
 ENV USERMAN_BASE_URL https://services.k8s.community/user-manager
