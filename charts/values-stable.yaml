@@ -111,7 +111,7 @@ clients:
   userman:
     baseURL: https://services.k8s.community/k8s-community/user-manager
   cicd:
-    baseURL: http://k8s-build-01:8080
+    baseURL: http://build.k8s.community:8080
 
 ## Resource requests and limits
 ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
