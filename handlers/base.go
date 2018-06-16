@@ -66,6 +66,7 @@ func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallb
 	err = client.UpdateCommitStatus(build)
 	if err != nil {
 		c.Code(http.StatusInternalServerError).Body(nil)
+		h.Errlog.Printf("GITHUBINT_PRIV_KEY is %v", privKey)
 		return fmt.Errorf("couldn't update commit status: %s", err)
 	}
 
