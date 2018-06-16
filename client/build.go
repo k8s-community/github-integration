@@ -1,5 +1,10 @@
 package client
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 const (
 	buildCallbackURLStr = "/build-cb"
 )
@@ -41,7 +46,8 @@ func (u *BuildService) BuildCallback(build BuildCallback) error {
 
 	_, err = u.client.Do(req, nil)
 	if err != nil {
-		return err
+		requestBody, _ := json.Marshal(build)
+		return fmt.Errorf("couldn't process request: %v, request body:'%s'", err, requestBody)
 	}
 
 	return nil

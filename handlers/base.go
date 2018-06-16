@@ -51,7 +51,7 @@ func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallb
 	installationID, err := h.installationID(build.Username)
 	if err != nil {
 		c.Code(http.StatusNotFound).Body(nil)
-		return fmt.Errorf("Couldn't find installation for %s", build.Username)
+		return fmt.Errorf("couldn't find installation for %s", build.Username)
 	}
 
 	privKey := []byte(h.Env["GITHUBINT_PRIV_KEY"])
@@ -60,13 +60,13 @@ func (h *Handler) updateCommitStatus(c *router.Control, build *github.BuildCallb
 	client, err := github.NewClient(nil, integrationID, *installationID, privKey)
 	if err != nil {
 		c.Code(http.StatusInternalServerError).Body(nil)
-		return fmt.Errorf("Couldn't init client for github: %s", err)
+		return fmt.Errorf("couldn't init client for github: %s", err)
 	}
 
 	err = client.UpdateCommitStatus(build)
 	if err != nil {
 		c.Code(http.StatusInternalServerError).Body(nil)
-		return fmt.Errorf("Couldn't update commit status: %s", err)
+		return fmt.Errorf("couldn't update commit status: %s", err)
 	}
 
 	return nil

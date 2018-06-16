@@ -11,6 +11,8 @@ import (
 
 // BuildCallbackHandler is handler for callback from build service (system)
 func (h *Handler) BuildCallbackHandler(c *router.Control) {
+	h.Infolog.Print("Received callback request...")
+
 	var build github.BuildCallback
 
 	body, err := ioutil.ReadAll(c.Request.Body)
