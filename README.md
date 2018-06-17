@@ -9,3 +9,9 @@ It also stores the additional data of builds (output).
 ### v 0.8.0
 
 - Added method to store build results
+
+
+# Authors
+
+Idea and implementation: Vladislav Saveliev [vsaveliev](https://github.com/vsaveliev)
+Fixes and additions: Elena Grahovac [rumyantseva](https://github.com/rumyantseva)
