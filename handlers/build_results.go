@@ -8,6 +8,7 @@ import (
 	"github.com/k8s-community/github-integration/client"
 	"github.com/k8s-community/github-integration/models"
 	"github.com/takama/router"
+	"gopkg.in/reform.v1"
 )
 
 // BuildResultsHandler handles and stores results of the building process.
@@ -46,4 +47,29 @@ func (h *Handler) BuildResultsHandler(c *router.Control) {
 	}
 
 	c.Code(http.StatusCreated).Body("Document uuid: " + build.UUID)
+}
+
+func (h *Handler) ShowBuildResults(c *router.Control) {
+	uuid := c.Get(":uuid")
+	st, err := h.DB.FindOneFrom(models.BuildTable, "uuid", uuid)
+	if err != nil && err != reform.ErrNoRows {
+		h.Errlog.Print(err)
+		c.Code(http.StatusInternalServerError).Body(nil)
+		return
+	}
+	if err == reform.ErrNoRows {
+		h.Errlog.Print(err)
+		c.Code(http.StatusNotFound).Body(nil)
+		return
+	}
+
+	var bld = &models.Build{}
+	bld = st.(*models.Build)
+
+	err = json.NewEncoder(c.Writer).Encode(bld)
+	if err != nil {
+		h.Errlog.Print(err)
+		c.Code(http.StatusInternalServerError).Body(nil)
+		return
+	}
 }

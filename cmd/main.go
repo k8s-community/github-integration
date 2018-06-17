@@ -90,6 +90,7 @@ func main() {
 	r.POST(apiPrefix+"/auth-callback", h.AuthCallbackHandler)
 	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
 	r.POST(apiPrefix+"/build-results", h.BuildResultsHandler)
+	r.GET(apiPrefix+"/build-results/:uuid", h.ShowBuildResults)
 	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_LOCAL_PORT"])
 	h.Infolog.Printf("Registered routes are: %+v", r.Routes())
 
