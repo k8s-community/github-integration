@@ -7,6 +7,7 @@ import (
 
 const (
 	buildCallbackURLStr = "/build-cb"
+	buildCResultsURLStr = "/build-results"
 )
 
 // Possible GitHub Build states
@@ -37,6 +38,15 @@ type BuildCallback struct {
 	Context     string `json:"context"`
 }
 
+type BuildResults struct {
+	UUID       string `json:"uuid"`
+	Username   string `json:"username"`
+	Repository string `json:"repository"`
+	CommitHash string `json:"commitHash"`
+	Passed     bool   `json:"passed"`
+	Log        string `json:"log"`
+}
+
 // BuildCallback sends request for update commit status on github side
 func (u *BuildService) BuildCallback(build BuildCallback) error {
 	req, err := u.client.NewRequest(postMethod, buildCallbackURLStr, build)
@@ -47,7 +57,22 @@ func (u *BuildService) BuildCallback(build BuildCallback) error {
 	_, err = u.client.Do(req, nil)
 	if err != nil {
 		requestBody, _ := json.Marshal(build)
-		return fmt.Errorf("couldn't process request: %v, request body:'%s'", err, requestBody)
+		return fmt.Errorf("couldn't process build-callback request: %v, request body:'%s'", err, requestBody)
+	}
+
+	return nil
+}
+
+func (u *BuildService) BuildResults(results *BuildResults) error {
+	req, err := u.client.NewRequest(postMethod, buildCResultsURLStr, results)
+	if err != nil {
+		return err
+	}
+
+	_, err = u.client.Do(req, nil)
+	if err != nil {
+		requestBody, _ := json.Marshal(results)
+		return fmt.Errorf("couldn't process build-results request: %v, request body:'%s'", err, requestBody)
 	}
 
 	return nil
