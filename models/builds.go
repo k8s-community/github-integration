@@ -6,16 +6,16 @@ import "time"
 
 //reform:builds
 type Build struct {
-	ID         int64  `reform:"id,pk"`
-	UUID       string `reform:"uuid"`
-	Username   string `reform:"username"`
-	Repository string `reform:"repository"`
-	Commit     string `reform:"commit"`
-	Passed     bool   `reform:"passed"`
-	Log        string `reform:"log"`
+	ID         int64  `reform:"id,pk" json:"-"`
+	UUID       string `reform:"uuid" json:"uuid"`
+	Username   string `reform:"username" json:"username"`
+	Repository string `reform:"repository" json:"repository"`
+	Commit     string `reform:"commit" json:"commit"`
+	Passed     bool   `reform:"passed" json:"passed"`
+	Log        string `reform:"log" json:"log"`
 
-	CreatedAt time.Time `reform:"created_at"`
-	UpdatedAt time.Time `reform:"updated_at"`
+	CreatedAt time.Time `reform:"created_at" json:"created_at"`
+	UpdatedAt time.Time `reform:"updated_at" json:"updated_at"`
 }
 
 // BeforeInsert set CreatedAt and UpdatedAt.
