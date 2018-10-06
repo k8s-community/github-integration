@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 const (
@@ -76,4 +77,19 @@ func (u *BuildService) BuildResults(results *BuildResults) error {
 	}
 
 	return nil
+}
+
+func (u *BuildService) ShowResults(uuid string) (*BuildResults, error) {
+	req, err := u.client.NewRequest(http.MethodGet, buildCResultsURLStr+"/"+uuid, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	build := &BuildResults{}
+	_, err = u.client.Do(req, build)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't get results for uuid %s: %v", uuid, err)
+	}
+
+	return build, nil
 }
