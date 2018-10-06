@@ -8,7 +8,7 @@ REGISTRY?=docker.io/k8sc
 CA_DIR?=certs
 
 # Use the 0.0.0 tag for testing, it shouldn't clobber any release builds
-RELEASE?=0.8.2
+RELEASE?=0.9.0
 GOOS?=linux
 GOARCH?=amd64
 
