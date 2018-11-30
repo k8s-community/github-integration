@@ -1,7 +1,7 @@
 FROM scratch
 
 ENV GITHUBINT_LOCAL_PORT 8080
-ENV GITHUBINT_BRANCH "release"
+ENV GITHUBINT_BRANCH "master"
 
 ENV GITHUBINT_TOKEN "Webhook secret is in integration settings on Github"
 ENV GITHUBINT_PRIV_KEY "Private key is in integration settings on Github"
