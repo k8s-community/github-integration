@@ -114,7 +114,7 @@ vet:
 	@go vet ./...
 
 .PHONY: test
-test: clean fmt lint vet
+test: clean fmt
 	@echo "+ $@"
 	@go test -v -race -tags "$(BUILDTAGS) cgo" ./...
 

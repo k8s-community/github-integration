@@ -80,6 +80,7 @@ func main() {
 	r := router.New()
 	r.PanicHandler = handlers.Panic
 
+	r.GET("/", h.HomeHandler)
 	r.GET(apiPrefix+"/", h.HomeHandler)
 
 	r.GET("/healthz", h.HealthzHandler)
