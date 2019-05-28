@@ -20,6 +20,15 @@ type Handler struct {
 	Env     map[string]string
 }
 
+// NotFoundHandler handles all the wrong routes
+func (h *Handler) NotFoundHandler(c *router.Control) {
+	c.Code(http.StatusNotFound).Body(map[string]string{
+		"url":     c.Request.URL.String(),
+		"version": version.RELEASE,
+		"commit":  version.COMMIT,
+	})
+}
+
 // HomeHandler is default handler for home page
 // TODO: redirect to landing page
 func (h *Handler) HomeHandler(c *router.Control) {

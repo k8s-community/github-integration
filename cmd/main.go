@@ -92,6 +92,8 @@ func main() {
 	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
 	r.POST(apiPrefix+"/build-results", h.BuildResultsHandler)
 	r.GET(apiPrefix+"/build-results/:uuid", h.ShowBuildResults)
+	r.NotFound = h.NotFoundHandler
+
 	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_LOCAL_PORT"])
 	h.Infolog.Printf("Registered routes are: %+v", r.Routes())
 
