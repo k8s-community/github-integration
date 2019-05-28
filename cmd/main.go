@@ -80,9 +80,6 @@ func main() {
 	r := router.New()
 	r.PanicHandler = handlers.Panic
 
-	r.GET("/", h.HomeHandler)
-	r.GET(apiPrefix+"/", h.HomeHandler)
-
 	r.GET("/healthz", h.HealthzHandler)
 	r.GET("/info", h.InfoHandler)
 
@@ -90,9 +87,14 @@ func main() {
 	r.POST(apiPrefix+"/webhook", h.WebHookHandler)
 	r.POST(apiPrefix+"/auth-callback", h.AuthCallbackHandler)
 	r.POST(apiPrefix+"/build-cb", h.BuildCallbackHandler)
-	r.POST(apiPrefix+"/build-results", h.BuildResultsHandler)
+
 	r.GET(apiPrefix+"/build-results/:uuid", h.ShowBuildResults)
+	r.POST(apiPrefix+"/build-results", h.BuildResultsHandler)
+
 	r.NotFound = h.NotFoundHandler
+
+	r.GET("/", h.HomeHandler)
+	r.GET(apiPrefix+"/", h.HomeHandler)
 
 	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_LOCAL_PORT"])
 	h.Infolog.Printf("Registered routes are: %+v", r.Routes())
