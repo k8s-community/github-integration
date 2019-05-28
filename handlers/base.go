@@ -32,7 +32,7 @@ func (h *Handler) NotFoundHandler(c *router.Control) {
 // HomeHandler is default handler for home page
 // TODO: redirect to landing page
 func (h *Handler) HomeHandler(c *router.Control) {
-	fmt.Fprint(c.Writer, "The full URL to your integration's website.")
+	c.Code(http.StatusOK).Body("Hello, world!")
 }
 
 // AuthCallbackHandler is handler for auth callback
