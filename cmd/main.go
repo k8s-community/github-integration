@@ -93,8 +93,8 @@ func main() {
 
 	r.NotFound = h.NotFoundHandler
 
-	r.GET("/", h.HomeHandler)
-	r.GET(apiPrefix+"/", h.HomeHandler)
+	//r.GET("/", h.HomeHandler)
+	//r.GET(apiPrefix+"/", h.HomeHandler)
 
 	h.Infolog.Printf("start listening port %s", h.Env["GITHUBINT_LOCAL_PORT"])
 	h.Infolog.Printf("Registered routes are: %+v", r.Routes())
