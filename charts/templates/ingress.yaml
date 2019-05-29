@@ -38,7 +38,7 @@ spec:
       {{- if eq $namespace $workflow }}
       - path: /{{ $serviceName }}
       {{- else }}
-      - path: /{{ $namespace }}/{{ $serviceName }}
+      - path: /{{ $namespace }}/{{ $serviceName }}(/|$)(.*)
       {{- end }}
         backend:
           serviceName: {{ $serviceName }}
